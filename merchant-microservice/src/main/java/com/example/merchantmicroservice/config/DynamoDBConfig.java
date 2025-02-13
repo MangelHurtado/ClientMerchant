@@ -41,4 +41,11 @@ public class DynamoDBConfig {
     public DynamoDbEnhancedClient dynamoDbEnhancedClient(DynamoDbClient dynamoDbClient) {
         return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();
     }
+
+    @Bean
+    public DynamoDbTable<Merchant> merchantTable(
+            DynamoDbEnhancedClient dynamoDbEnhancedClient, AwsProperties properties) {
+        return dynamoDbEnhancedClient.table(properties.getDynamoDbTableName(),
+                TableSchema.fromBean(Merchant.class));
+    }
 }
