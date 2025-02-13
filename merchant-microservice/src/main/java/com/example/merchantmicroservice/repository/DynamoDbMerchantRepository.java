@@ -56,4 +56,25 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
 
         return Optional.ofNullable(merchantTable.getItem(key));
     }
+
+    public List<Merchant> findByName(String name) {
+        Expression expression = Expression.builder()
+                .expression("contains(#name, :name)")
+                .expressionNames(Collections.singletonMap("#name", "name"))
+                .expressionValues(Collections.singletonMap(":name", AttributeValue.builder().s(name).build()))
+                .build();
+
+        ScanEnhancedRequest scanRequest = ScanEnhancedRequest.builder()
+                .filterExpression(expression)
+                .build();
+
+        return merchantTable.scan(scanRequest)
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .collect(Collectors.toList());
+    }
+
+    public void updateMerchant(Merchant merchant) {
+        merchantTable.updateItem(merchant);
+    }
 }
