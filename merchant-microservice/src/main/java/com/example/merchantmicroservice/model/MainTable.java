@@ -1,34 +1,39 @@
 package com.example.merchantmicroservice.model;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import lombok.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public abstract class MainTable {
+public class MainTable {
 
-    @DynamoDBHashKey(attributeName = "PK")
-    private String pk;
+    protected String partitionKey;
+    protected String sortKey;
+    protected String id;
+    protected String status;
+    protected String gIndex2Pk;
+    protected Instant createdDate;
 
-    @DynamoDBRangeKey(attributeName = "SK")
-    private String sk;
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("PK")
+    public String getPartitionKey() { return partitionKey; }
 
-    @DynamoDBAttribute(attributeName = "id")
-    private String id;
+    @DynamoDbSortKey
+    @DynamoDbAttribute("SK")
+    public String getSortKey() { return sortKey; }
 
-    @DynamoDBAttribute(attributeName = "status")
-    private String status;
+    @DynamoDbAttribute("id")
+    public String getId() { return id; }
 
-    @DynamoDBAttribute(attributeName = "gIndex2Pk")
-    private String gIndex2Pk;
+    @DynamoDbAttribute("status")
+    public String getStatus() { return status; }
 
-    @DynamoDBAttribute(attributeName = "createdDate")
-    private LocalDateTime createdDate;
+    @DynamoDbAttribute("gIndex2Pk")
+    public String getGIndex2Pk() { return gIndex2Pk; }
+
+    @DynamoDbAttribute("createdDate")
+    public Instant getCreatedDate() { return createdDate; }
 }
