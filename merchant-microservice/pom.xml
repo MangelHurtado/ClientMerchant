@@ -15,6 +15,7 @@
 	<description>Merchant Microservice</description>
 	<properties>
 		<java.version>1.8</java.version>
+		<aws.java.sdk.version>2.29.20</aws.java.sdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -43,14 +44,8 @@
 
 		<!-- Dynamodb -->
 		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-dynamodb</artifactId>
-			<version>1.11.573</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.derjust</groupId>
-			<artifactId>spring-data-dynamodb</artifactId>
-			<version>5.1.0</version>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>dynamodb-enhanced</artifactId>
 		</dependency>
 
 		<!-- Swagger -->
@@ -65,8 +60,19 @@
 			<version>2.9.2</version>
 		</dependency>
 
-
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>${aws.java.sdk.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>

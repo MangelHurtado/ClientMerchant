@@ -1,34 +1,44 @@
 package com.example.merchantmicroservice.config;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import org.springframework.beans.factory.annotation.Value;
+
+import com.example.merchantmicroservice.model.Merchant;
+import com.example.merchantmicroservice.utils.AwsCredentials;
+import com.example.merchantmicroservice.utils.AwsProperties;
+import lombok.var;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-@Configuration
+import java.net.URI;
+
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties({AwsCredentials.class, AwsProperties.class})
 public class DynamoDBConfig {
 
-    @Value("${amazon.dynamodb.endpoint}")
-    private String dynamoDbEndpoint;
-
-    @Value("${amazon.accessKey}")
-    private String accessKey;
-
-    @Value("${amazon.aws.secretKey}")
-    private String secretKey;
-
-    @Value("${amazon.aws.region}")
-    private String region;
+    @Bean
+    public DynamoDbClient dynamoDbClient(AwsProperties properties,
+                                         AwsBasicCredentials awsCredentials) {
+        var builder = DynamoDbClient.builder().region(Region.of(properties.getRegion()));
+        if (properties.getEndpointOverride() != null) {
+            builder.endpointOverride(URI.create(properties.getEndpointOverride()));
+        }
+        return builder.credentialsProvider(() -> awsCredentials).build();
+    }
 
     @Bean
-    public AmazonDynamoDB amazonDynamoDB(){
-        return AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(dynamoDbEndpoint, region))
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
-                .build();
+    public AwsBasicCredentials awsCredentials(AwsProperties properties) {
+        return AwsBasicCredentials.create(properties.getCredentials().getAccessKey(),
+                properties.getCredentials().getSecretKey());
+    }
+
+    @Bean
+    public DynamoDbEnhancedClient dynamoDbEnhancedClient(DynamoDbClient dynamoDbClient) {
+        return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();
     }
 }
