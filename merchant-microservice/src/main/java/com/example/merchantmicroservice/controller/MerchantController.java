@@ -1,8 +1,9 @@
 package com.example.merchantmicroservice.controller;
 
-import com.example.merchantmicroservice.model.dto.MerchantRequest;
-import com.example.merchantmicroservice.model.dto.MerchantResponse;
+import com.example.merchantmicroservice.model.dto.MerchantInputDTO;
+import com.example.merchantmicroservice.model.dto.MerchantOutputDTO;
 import com.example.merchantmicroservice.service.MerchantService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,31 +13,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/merchants")
+@RequiredArgsConstructor
 public class MerchantController {
 
     private final MerchantService merchantService;
 
-    public MerchantController(MerchantService merchantService) { this.merchantService = merchantService; }
-
     @PostMapping
-    public ResponseEntity<MerchantResponse> createMerchant(@Valid @RequestBody MerchantRequest merchantRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(merchantService.createMerchant(merchantRequest));
+    public ResponseEntity<MerchantOutputDTO> createMerchant(@Valid @RequestBody MerchantInputDTO merchantInputDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(merchantService.createMerchant(merchantInputDTO));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MerchantResponse> findById(@PathVariable String id,
-                                                     @RequestParam(required = false, defaultValue = "false") boolean simpleOutput) {
+    public ResponseEntity<MerchantOutputDTO> findById(@PathVariable String id, @RequestParam(required = false, defaultValue = "false") boolean simpleOutput) {
         return ResponseEntity.ok(merchantService.findById(id, simpleOutput));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<MerchantResponse>> findByName(@RequestParam String name) {
+    public ResponseEntity<List<MerchantOutputDTO>> findByName(@RequestParam String name) {
         return ResponseEntity.ok(merchantService.findByName(name));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MerchantResponse> updateMerchant(@PathVariable String id,
-                                                           @Valid @RequestBody MerchantRequest merchantRequest) {
-        return ResponseEntity.ok(merchantService.updateMerchant(id, merchantRequest));
+    public ResponseEntity<MerchantOutputDTO> updateMerchant(@PathVariable String id, @Valid @RequestBody MerchantInputDTO merchantInputDTO) {
+        return ResponseEntity.ok(merchantService.updateMerchant(id, merchantInputDTO));
     }
 }

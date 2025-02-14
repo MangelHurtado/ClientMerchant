@@ -2,8 +2,8 @@ package com.example.merchantmicroservice.service;
 
 import com.example.merchantmicroservice.mappers.MerchantMapper;
 import com.example.merchantmicroservice.model.Merchant;
-import com.example.merchantmicroservice.model.dto.MerchantRequest;
-import com.example.merchantmicroservice.model.dto.MerchantResponse;
+import com.example.merchantmicroservice.model.dto.MerchantInputDTO;
+import com.example.merchantmicroservice.model.dto.MerchantOutputDTO;
 import com.example.merchantmicroservice.repository.MerchantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,30 +18,30 @@ public class MerchantService {
     private final MerchantRepository merchantRepository;
     private final MerchantMapper merchantMapper;
 
-    public MerchantResponse createMerchant(MerchantRequest merchantRequest) {
-        Merchant merchant = merchantMapper.toEntity(merchantRequest);
+    public MerchantOutputDTO createMerchant(MerchantInputDTO merchantInputDTO) {
+        Merchant merchant = merchantMapper.toEntity(merchantInputDTO);
         merchantRepository.create(merchant);
-        return merchantMapper.toResponse(merchant);
+        return merchantMapper.toDTO(merchant);
     }
 
-    public MerchantResponse findById(String id, boolean simpleOutput) {
+    public MerchantOutputDTO findById(String id, boolean simpleOutput) {
         return merchantRepository.findById(id)
-                .map(merchant -> simpleOutput ? new MerchantResponse(merchant.getId(), null, null, null) : merchantMapper.toResponse(merchant))
+                .map(merchant -> simpleOutput ? new MerchantOutputDTO(merchant.getId(), null, null, null) : merchantMapper.toDTO(merchant))
                 .orElseThrow(() -> new NoSuchElementException("Merchant not found"));
     }
 
-    public List<MerchantResponse> findByName(String name) {
+    public List<MerchantOutputDTO> findByName(String name) {
         return merchantRepository.findByName(name)
                 .stream()
-                .map(merchantMapper::toResponse)
+                .map(merchantMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public MerchantResponse updateMerchant(String id, MerchantRequest merchantRequest) {
+    public MerchantOutputDTO updateMerchant(String id, MerchantInputDTO merchantRequest) {
         Merchant merchant = merchantRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Merchant not found"));
         merchantMapper.updateEntity(merchantRequest, merchant);
         merchantRepository.updateMerchant(merchant);
-        return merchantMapper.toResponse(merchant);
+        return merchantMapper.toDTO(merchant);
     }
 }

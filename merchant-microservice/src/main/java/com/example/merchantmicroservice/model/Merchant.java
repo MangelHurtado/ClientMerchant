@@ -5,7 +5,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 
 @DynamoDbBean
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -19,7 +19,7 @@ public class Merchant extends MainTable{
 
     private String name;
     private String address;
-    private Merchant merchantType;
+    private MerchantType merchantType;
 
     public void setId(String id) {
         setPartitionKey(MerchantKeyBuilder.makePartitionKey(id));

@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MerchantRequest {
+public class MerchantInputDTO {
     @NotBlank(message = "El nombre del comercio no puede estar vacío")
     @Size(max = 100, message = "El nombre no puede tener más de 100 caracteres")
     private String name;

@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MerchantResponse {
+public class MerchantOutputDTO {
     private String id;
     private String name;
     private String address;
