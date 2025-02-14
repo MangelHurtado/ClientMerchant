@@ -8,7 +8,9 @@ import com.example.clientmicroservice.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,5 +29,33 @@ public class ClientService {
         return clientRepository.findById(id)
                 .map(client -> simpleOutput ? new ClientOutputDTO(client.getId(), null, null, null, null, null) : clientMapper.toDTO(client))
                 .orElseThrow(() -> new NoSuchElementException("Client not found"));
+    }
+
+    public List<ClientOutputDTO> findByEmail(String email) {
+        List<Client> clients = clientRepository.findByEmail(email);
+        if (clients.isEmpty()) {
+            throw new NoSuchElementException("No clients found with the given email");
+        }
+        return clients.stream()
+                .map(clientMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ClientOutputDTO> findByName(String name) {
+        List<Client> clients = clientRepository.findByName(name);
+        if (clients.isEmpty()) {
+            throw new NoSuchElementException("No clients found with the given name");
+        }
+        return clients.stream()
+                .map(clientMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ClientOutputDTO updateClient(String id, ClientInputDTO clientRequest) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Client not found"));
+        clientMapper.updateEntity(clientRequest, client);
+        clientRepository.updateClient(client);
+        return clientMapper.toDTO(client);
     }
 }

@@ -31,8 +31,11 @@ public class MerchantService {
     }
 
     public List<MerchantOutputDTO> findByName(String name) {
-        return merchantRepository.findByName(name)
-                .stream()
+        List<Merchant> merchants = merchantRepository.findByName(name);
+        if (merchants.isEmpty()) {
+            throw new NoSuchElementException("No merchants found with the given name");
+        }
+        return merchants.stream()
                 .map(merchantMapper::toDTO)
                 .collect(Collectors.toList());
     }

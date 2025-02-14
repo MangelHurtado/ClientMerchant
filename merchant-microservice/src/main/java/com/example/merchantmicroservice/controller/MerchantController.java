@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/merchants")
+@RequestMapping("/merchant")
 @RequiredArgsConstructor
 public class MerchantController {
 

@@ -15,5 +15,5 @@ public interface MerchantMapper {
     Merchant toEntity(MerchantInputDTO merchantInputDTO);
     MerchantOutputDTO toDTO(Merchant merchant);
 
-    void updateEntity(MerchantInputDTO merchantRequest, @MappingTarget Merchant merchant);
+    void updateEntity(MerchantInputDTO merchantInputDTO, @MappingTarget Merchant merchant);
 }

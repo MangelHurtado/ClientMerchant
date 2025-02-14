@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MerchantRepository {
-    List<Merchant> findAll();
     Merchant create(Merchant merchant);
     Optional<Merchant> findById(String id);
     List<Merchant> findByName(String name);
-    void updateMerchant(Merchant merchant);
+    Merchant updateMerchant(Merchant merchant);
 }

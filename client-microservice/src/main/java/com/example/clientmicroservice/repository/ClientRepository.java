@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClientRepository {
-    List<Client> findAll();
     Client create(Client client);
     Optional<Client> findById(String id);
-    //List<Client> findByName(String name);
-    //void updateClient(Client client);
+    List<Client> findByEmail(String email);
+    List<Client> findByName(String name);
+    Client updateClient(Client client);
 }
