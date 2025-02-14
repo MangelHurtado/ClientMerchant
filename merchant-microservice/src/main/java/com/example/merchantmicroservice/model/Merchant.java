@@ -15,7 +15,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnor
 public class Merchant extends MainTable{
 
     public static final String MERCHANT_PK_PREFIX = "MERCHANT#";
-    public static final String MERCHANT_SK_PREFIX = "MERCHANT#";
+    public static final String MERCHANT_SK_PREFIX = "PROFILE";
 
     private String name;
     private String address;

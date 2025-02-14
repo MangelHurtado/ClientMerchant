@@ -4,12 +4,15 @@ import com.example.merchantmicroservice.model.MerchantType;
 import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class MerchantResponse {
-    private final String id;
-    private final String name;
-    private final String address;
-    private final MerchantType merchantType;
+    private String id;
+    private String name;
+    private String address;
+    private MerchantType merchantType;
 }
 
 

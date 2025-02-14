@@ -5,21 +5,18 @@ import com.example.merchantmicroservice.model.Merchant;
 import com.example.merchantmicroservice.model.dto.MerchantRequest;
 import com.example.merchantmicroservice.model.dto.MerchantResponse;
 import com.example.merchantmicroservice.repository.MerchantRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MerchantService {
 
     private final MerchantRepository merchantRepository;
     private final MerchantMapper merchantMapper;
-
-    public MerchantService(MerchantRepository merchantRepository, MerchantMapper merchantMapper) {
-        this.merchantRepository = merchantRepository;
-        this.merchantMapper = merchantMapper;
-    }
 
     public MerchantResponse createMerchant(MerchantRequest merchantRequest) {
         Merchant merchant = merchantMapper.toEntity(merchantRequest);
