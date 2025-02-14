@@ -1,6 +1,7 @@
 package com.example.clientmicroservice.config;
 
 
+import com.example.clientmicroservice.model.Client;
 import com.example.clientmicroservice.utils.AwsCredentials;
 import com.example.clientmicroservice.utils.AwsProperties;
 import lombok.var;
@@ -9,6 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
@@ -37,5 +40,12 @@ public class DynamoDBConfig {
     @Bean
     public DynamoDbEnhancedClient dynamoDbEnhancedClient(DynamoDbClient dynamoDbClient) {
         return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();
+    }
+
+    @Bean
+    public DynamoDbTable<Client> clientTable(
+            DynamoDbEnhancedClient dynamoDbEnhancedClient, AwsProperties properties) {
+        return dynamoDbEnhancedClient.table(properties.getDynamoDbTableName(),
+                TableSchema.fromBean(Client.class));
     }
 }
