@@ -47,4 +47,14 @@ public class MerchantService {
         merchantRepository.updateMerchant(merchant);
         return merchantMapper.toDTO(merchant);
     }
+
+    public List<MerchantOutputDTO> findByClient(String clientId) {
+        List<Merchant> merchants = merchantRepository.findByClient(clientId);
+        if (merchants.isEmpty()) {
+            throw new NoSuchElementException("No merchants found for the given client");
+        }
+        return merchants.stream()
+                .map(merchantMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

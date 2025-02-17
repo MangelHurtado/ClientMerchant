@@ -37,4 +37,9 @@ public class MerchantController {
     public ResponseEntity<MerchantOutputDTO> updateMerchant(@PathVariable String id, @Valid @RequestBody MerchantInputDTO merchantInputDTO) {
         return ResponseEntity.ok(merchantService.updateMerchant(id, merchantInputDTO));
     }
+
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<MerchantOutputDTO>> findByClient(@PathVariable String clientId) {
+        return ResponseEntity.ok(merchantService.findByClient(clientId));
+    }
 }

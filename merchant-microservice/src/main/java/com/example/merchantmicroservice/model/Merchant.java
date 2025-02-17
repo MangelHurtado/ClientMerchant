@@ -15,27 +15,26 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnor
 public class Merchant extends MainTable{
 
     public static final String MERCHANT_PK_PREFIX = "MERCHANT#";
-    public static final String MERCHANT_SK_PREFIX = "PROFILE";
+    public static final String MERCHANT_SK_PREFIX = "METADATA";
 
     private String name;
     private String address;
     private MerchantType merchantType;
+    private String clientId;
 
-    public void setId(String id) {
-        setPartitionKey(MerchantKeyBuilder.makePartitionKey(id));
-        setSortKey(MerchantKeyBuilder.makeSortKey());
+    public void setId(String id, String clientId) {
+        this.partitionKey = MerchantKeyBuilder.makePartitionKey(id);
+        this.sortKey = MerchantKeyBuilder.makeSortKey();
+        this.gIndex2Pk = "CLIENT#" + clientId;
     }
 
     @DynamoDbIgnore
     public String getId() { return getPartitionKey().substring(MERCHANT_PK_PREFIX.length()); }
 
     public static class MerchantKeyBuilder {
-        private MerchantKeyBuilder() {
-        }
+        private MerchantKeyBuilder() {}
 
         public static String makePartitionKey(String id) { return MERCHANT_PK_PREFIX + id; }
-
-        public static String makeSortKey(){ return MERCHANT_SK_PREFIX; }
-
+        public static String makeSortKey() { return MERCHANT_SK_PREFIX; }
     }
 }

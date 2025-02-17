@@ -2,6 +2,7 @@ package com.example.clientmicroservice.controller;
 
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
+import com.example.clientmicroservice.model.dto.MerchantOutputDTO;
 import com.example.clientmicroservice.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +43,8 @@ public class ClientController {
         return ResponseEntity.ok(clientService.updateClient(id, clientInputDTO));
     }
 
-
+    @GetMapping("/{id}/merchants")
+    public ResponseEntity<MerchantOutputDTO> getMerchantsForClient(@PathVariable String id) {
+        return ResponseEntity.ok(clientService.findMerchantsByClientId(id));
+    }
 }

@@ -5,12 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class DynamoDBClientRepository implements ClientRepository{
+public class DynamoDBClientRepository implements ClientRepository {
 
     private final DynamoDbTable<Client> clientTable;
 
@@ -34,23 +37,28 @@ public class DynamoDBClientRepository implements ClientRepository{
 
     @Override
     public Optional<Client> findByEmail(String email) {
-        return clientTable.scan().items().stream()
-                .filter(Objects::nonNull)
-                .filter(c -> c.getEmail() != null && c.getEmail().equalsIgnoreCase(email))
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(QueryConditional.keyEqualTo(
+                        Key.builder().partitionValue("EMAIL#" + email).build()))
+                .build();
+
+        return clientTable.query(queryRequest)
+                .items()
+                .stream()
                 .findFirst();
     }
 
     @Override
     public List<Client> findByName(String name) {
         return clientTable.scan().items().stream()
-                .filter(c -> c.getName().toLowerCase().contains(name.toLowerCase()))
+                .filter(c -> c.getPartitionKey().startsWith("CLIENT#") && c.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public Client updateClient(Client client) {
         clientTable.updateItem(client);
         return client;
     }
-
 }
