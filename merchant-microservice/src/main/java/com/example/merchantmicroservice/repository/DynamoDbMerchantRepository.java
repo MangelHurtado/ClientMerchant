@@ -19,27 +19,6 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
     private final DynamoDbTable<Merchant> merchantTable;
 
     @Override
-    public List<Merchant> findAll() {
-        Map<String, AttributeValue> expressionValues = new HashMap<>();
-        expressionValues.put(":skPrefix", AttributeValue.builder().s(Merchant.MERCHANT_SK_PREFIX).build());
-
-        Expression expression = Expression.builder()
-                .expression("begins_with(SK, :skPrefix)")
-                .expressionValues(expressionValues)
-                .build();
-
-        ScanEnhancedRequest scanEnhancedRequest = ScanEnhancedRequest.builder()
-                .filterExpression(expression)
-                .build();
-
-        return merchantTable.scan(scanEnhancedRequest)
-                .stream()
-                .flatMap(page -> page.items().stream())
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
     public Merchant create(Merchant merchant) {
         String merchantId = UUID.randomUUID().toString();
         merchant.setId(merchantId);

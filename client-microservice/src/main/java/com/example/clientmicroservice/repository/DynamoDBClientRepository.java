@@ -33,16 +33,17 @@ public class DynamoDBClientRepository implements ClientRepository{
     }
 
     @Override
-    public List<Client> findByEmail(String email) {
+    public Optional<Client> findByEmail(String email) {
         return clientTable.scan().items().stream()
-                .filter(m -> m.getEmail().toLowerCase().contains(email.toLowerCase()))
-                .collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                .filter(c -> c.getEmail() != null && c.getEmail().equalsIgnoreCase(email))
+                .findFirst();
     }
 
     @Override
     public List<Client> findByName(String name) {
         return clientTable.scan().items().stream()
-                .filter(m -> m.getName().toLowerCase().contains(name.toLowerCase()))
+                .filter(c -> c.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
 

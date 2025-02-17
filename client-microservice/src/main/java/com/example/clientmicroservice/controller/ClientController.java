@@ -27,12 +27,12 @@ public class ClientController {
         return ResponseEntity.ok(clientService.findById(id, simpleOutput));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<ClientOutputDTO>> findByEmail(@RequestParam String email) {
+    @GetMapping("/search/by-email")
+    public ResponseEntity<ClientOutputDTO> findByEmail(@RequestParam String email) {
         return ResponseEntity.ok(clientService.findByEmail(email));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/by-name")
     public ResponseEntity<List<ClientOutputDTO>> findByName(@RequestParam String name) {
         return ResponseEntity.ok(clientService.findByName(name));
     }

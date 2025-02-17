@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,14 +32,10 @@ public class ClientService {
                 .orElseThrow(() -> new NoSuchElementException("Client not found"));
     }
 
-    public List<ClientOutputDTO> findByEmail(String email) {
-        List<Client> clients = clientRepository.findByEmail(email);
-        if (clients.isEmpty()) {
-            throw new NoSuchElementException("No clients found with the given email");
-        }
-        return clients.stream()
+    public ClientOutputDTO findByEmail(String email) {
+        return clientRepository.findByEmail(email)
                 .map(clientMapper::toDTO)
-                .collect(Collectors.toList());
+                .orElseThrow(() -> new NoSuchElementException("Client not found with the given email"));
     }
 
     public List<ClientOutputDTO> findByName(String name) {
