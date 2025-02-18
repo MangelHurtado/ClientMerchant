@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,13 +21,19 @@ public class MerchantService {
 
     public MerchantOutputDTO createMerchant(MerchantInputDTO merchantInputDTO) {
         Merchant merchant = merchantMapper.toEntity(merchantInputDTO);
+
+        if (merchant.getPartitionKey() == null) {
+            merchant.setId(UUID.randomUUID().toString());
+        }
+
         merchantRepository.create(merchant);
         return merchantMapper.toDTO(merchant);
     }
 
+
     public MerchantOutputDTO findById(String id, boolean simpleOutput) {
         return merchantRepository.findById(id)
-                .map(merchant -> simpleOutput ? new MerchantOutputDTO(merchant.getId(), null, null, null) : merchantMapper.toDTO(merchant))
+                .map(merchant -> simpleOutput ? new MerchantOutputDTO(merchant.getId(), null, null, null, null) : merchantMapper.toDTO(merchant))
                 .orElseThrow(() -> new NoSuchElementException("Merchant not found"));
     }
 

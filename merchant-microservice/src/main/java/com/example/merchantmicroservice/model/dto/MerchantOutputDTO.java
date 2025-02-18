@@ -13,6 +13,5 @@ public class MerchantOutputDTO {
     private String name;
     private String address;
     private MerchantType merchantType;
+    private String clientId;
 }
-
-

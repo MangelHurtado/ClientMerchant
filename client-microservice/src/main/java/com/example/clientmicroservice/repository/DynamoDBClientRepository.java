@@ -2,7 +2,9 @@ package com.example.clientmicroservice.repository;
 
 import com.example.clientmicroservice.model.Client;
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 import org.springframework.stereotype.Repository;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
@@ -10,6 +12,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,16 +40,22 @@ public class DynamoDBClientRepository implements ClientRepository {
 
     @Override
     public Optional<Client> findByEmail(String email) {
-        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
-                .queryConditional(QueryConditional.keyEqualTo(
-                        Key.builder().partitionValue("EMAIL#" + email).build()))
-                .build();
+        DynamoDbIndex<Client> gsi = clientTable.index("GSI1");
 
-        return clientTable.query(queryRequest)
-                .items()
-                .stream()
+        var results = gsi.query(r -> r.queryConditional(
+                QueryConditional.keyEqualTo(k -> k.partitionValue("EMAIL#" + email))
+        ));
+
+        return StreamSupport.stream(results.spliterator(), false)
+                .flatMap(page -> page.items().stream())
                 .findFirst();
     }
+
+
+
+
+
+
 
     @Override
     public List<Client> findByName(String name) {

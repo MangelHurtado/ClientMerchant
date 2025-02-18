@@ -5,14 +5,10 @@ import com.example.clientmicroservice.mappers.ClientMapper;
 import com.example.clientmicroservice.model.Client;
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
-import com.example.clientmicroservice.model.dto.MerchantOutputDTO;
 import com.example.clientmicroservice.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -22,7 +18,6 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
-    private final MerchantFeignClient merchantFeignClient;
 
     public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) {
         Client client = clientMapper.toEntity(clientInputDTO);
@@ -60,15 +55,5 @@ public class ClientService {
         clientMapper.updateEntity(clientRequest, client);
         clientRepository.updateClient(client);
         return clientMapper.toDTO(client);
-    }
-
-    public MerchantOutputDTO findMerchantsByClientId(String clientId) {
-        ResponseEntity<MerchantOutputDTO> response = merchantFeignClient.findMerchantById(clientId);
-
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            return response.getBody();
-        } else {
-            throw new NoSuchElementException("No merchants found for the given clientId");
-        }
     }
 }

@@ -23,5 +23,8 @@ public class MerchantInputDTO {
 
     @NotNull(message = "El tipo de comercio es obligatorio")
     private MerchantType merchantType;
+
+    @NotBlank(message = "El clientId no puede estar vacío")
+    private String clientId;
 }
 

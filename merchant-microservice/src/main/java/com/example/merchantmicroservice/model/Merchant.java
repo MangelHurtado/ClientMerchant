@@ -1,8 +1,8 @@
 package com.example.merchantmicroservice.model;
 
 import lombok.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 
 @DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
@@ -12,8 +12,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnor
 @Setter
 @Builder
 @ToString
-public class Merchant extends MainTable{
-
+public class Merchant extends MainTable {
     public static final String MERCHANT_PK_PREFIX = "MERCHANT#";
     public static final String MERCHANT_SK_PREFIX = "METADATA";
 
@@ -22,19 +21,22 @@ public class Merchant extends MainTable{
     private MerchantType merchantType;
     private String clientId;
 
-    public void setId(String id, String clientId) {
-        this.partitionKey = MerchantKeyBuilder.makePartitionKey(id);
-        this.sortKey = MerchantKeyBuilder.makeSortKey();
-        this.gIndex2Pk = "CLIENT#" + clientId;
+    public void setId(String id) {
+        setPartitionKey(MERCHANT_PK_PREFIX + id);
+        setSortKey(MERCHANT_SK_PREFIX);
     }
 
-    @DynamoDbIgnore
-    public String getId() { return getPartitionKey().substring(MERCHANT_PK_PREFIX.length()); }
+    public String getId() {
+        return getPartitionKey().substring(MERCHANT_PK_PREFIX.length());
+    }
 
-    public static class MerchantKeyBuilder {
-        private MerchantKeyBuilder() {}
+    @DynamoDbAttribute("clientId")
+    public String getClientId() {
+        return clientId;
+    }
 
-        public static String makePartitionKey(String id) { return MERCHANT_PK_PREFIX + id; }
-        public static String makeSortKey() { return MERCHANT_SK_PREFIX; }
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+        setGIndex2Pk(clientId);
     }
 }

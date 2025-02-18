@@ -1,8 +1,8 @@
 package com.example.clientmicroservice.controller;
 
+import com.example.clientmicroservice.config.MerchantFeignClient;
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
-import com.example.clientmicroservice.model.dto.MerchantOutputDTO;
 import com.example.clientmicroservice.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +17,7 @@ import java.util.List;
 public class ClientController {
 
     private final ClientService clientService;
+    private final MerchantFeignClient merchantFeignClient;
 
     @PostMapping
     public ResponseEntity<ClientOutputDTO> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
@@ -43,8 +44,9 @@ public class ClientController {
         return ResponseEntity.ok(clientService.updateClient(id, clientInputDTO));
     }
 
-    @GetMapping("/{id}/merchants")
-    public ResponseEntity<MerchantOutputDTO> getMerchantsForClient(@PathVariable String id) {
-        return ResponseEntity.ok(clientService.findMerchantsByClientId(id));
+    @PutMapping("/check-merchant")
+    public ResponseEntity<Boolean> checkMerchantExists(@RequestParam String merchantId) {
+        boolean exists = merchantFeignClient.findById(merchantId);
+        return ResponseEntity.ok(exists);
     }
 }

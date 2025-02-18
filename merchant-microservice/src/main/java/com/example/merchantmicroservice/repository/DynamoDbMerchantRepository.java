@@ -2,15 +2,14 @@ package com.example.merchantmicroservice.repository;
 
 import com.example.merchantmicroservice.model.Merchant;
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 import org.springframework.stereotype.Repository;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,11 +21,14 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
 
     @Override
     public Merchant create(Merchant merchant) {
-        String merchantId = UUID.randomUUID().toString();
-        merchant.setId(merchantId, merchant.getClientId());
+        if (merchant.getId() == null) {
+            merchant.setId(UUID.randomUUID().toString());
+        }
         merchantTable.putItem(merchant);
         return merchant;
     }
+
+
 
     @Override
     public Optional<Merchant> findById(String id) {
@@ -52,26 +54,14 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
 
     @Override
     public List<Merchant> findByClient(String clientId) {
-        QueryConditional skBeginsWithQuery = buildSkBeginsWithKeyQuery(clientId);
+            DynamoDbIndex<Merchant> gsi = merchantTable.index("GSI1");
 
-        QueryEnhancedRequest reverseOrderQuery = QueryEnhancedRequest
-                .builder()
-                .queryConditional(skBeginsWithQuery)
-                .scanIndexForward(Boolean.FALSE)
-                .build();
+            var results = gsi.query(r -> r.queryConditional(
+                    QueryConditional.keyEqualTo(k -> k.partitionValue(clientId))
+            ));
 
-        return merchantTable.query(reverseOrderQuery)
-                .items()
-                .stream()
-                .collect(Collectors.toList());
-    }
-
-    private QueryConditional buildSkBeginsWithKeyQuery(String clientId) {
-        return QueryConditional.sortBeginsWith(
-                Key.builder()
-                        .partitionValue("CLIENT#" + clientId)
-                        .sortValue(Merchant.MERCHANT_SK_PREFIX)
-                        .build()
-        );
+            List<Merchant> merchants = new ArrayList<>();
+            results.forEach(page -> merchants.addAll(page.items()));
+            return merchants;
     }
 }
