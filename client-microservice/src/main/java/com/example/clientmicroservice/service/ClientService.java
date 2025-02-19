@@ -7,6 +7,7 @@ import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
 import com.example.clientmicroservice.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,10 +15,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    private final MerchantFeignClient merchantFeignClient;
 
     public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) {
         Client client = clientMapper.toEntity(clientInputDTO);
@@ -55,5 +58,14 @@ public class ClientService {
         clientMapper.updateEntity(clientRequest, client);
         clientRepository.updateClient(client);
         return clientMapper.toDTO(client);
+    }
+
+    public boolean checkMerchantExists(String merchantId, boolean simpleOutput) {
+        try {
+            merchantFeignClient.findById(merchantId, simpleOutput);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

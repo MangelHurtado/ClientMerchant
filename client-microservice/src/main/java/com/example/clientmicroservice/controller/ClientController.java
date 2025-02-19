@@ -17,7 +17,6 @@ import java.util.List;
 public class ClientController {
 
     private final ClientService clientService;
-    private final MerchantFeignClient merchantFeignClient;
 
     @PostMapping
     public ResponseEntity<ClientOutputDTO> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
@@ -44,9 +43,8 @@ public class ClientController {
         return ResponseEntity.ok(clientService.updateClient(id, clientInputDTO));
     }
 
-    @PutMapping("/check-merchant")
-    public ResponseEntity<Boolean> checkMerchantExists(@RequestParam String merchantId) {
-        boolean exists = merchantFeignClient.findById(merchantId);
-        return ResponseEntity.ok(exists);
+    @GetMapping("/check-merchant")
+    public ResponseEntity<Boolean> checkMerchantExists(@RequestParam String merchantId, @RequestParam(required = false, defaultValue = "false") boolean simpleOutput) {
+        return ResponseEntity.ok(clientService.checkMerchantExists(merchantId, simpleOutput));
     }
 }
