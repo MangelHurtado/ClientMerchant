@@ -8,8 +8,6 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
-import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -51,19 +49,12 @@ public class DynamoDBClientRepository implements ClientRepository {
                 .findFirst();
     }
 
-
-
-
-
-
-
     @Override
     public List<Client> findByName(String name) {
         return clientTable.scan().items().stream()
                 .filter(c -> c.getPartitionKey().startsWith("CLIENT#") && c.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public Client updateClient(Client client) {

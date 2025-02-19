@@ -26,11 +26,15 @@ public class Client extends MainTable {
     public void setId(String id) {
         setPartitionKey(CLIENT_PK_PREFIX + id);
         setSortKey(CLIENT_SK_PREFIX);
-        setGIndex2Pk("EMAIL#" + email);
     }
 
     @DynamoDbIgnore
     public String getId() {
         return getPartitionKey().substring(CLIENT_PK_PREFIX.length());
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+        setGIndex2Pk("EMAIL#" + email);
     }
 }

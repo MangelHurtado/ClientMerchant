@@ -28,8 +28,6 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
         return merchant;
     }
 
-
-
     @Override
     public Optional<Merchant> findById(String id) {
         Key key = Key.builder()
