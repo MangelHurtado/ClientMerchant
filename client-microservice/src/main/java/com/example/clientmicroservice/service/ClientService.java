@@ -40,6 +40,7 @@ public class ClientService {
      * @param id Client id
      * @param simpleOutput If true, only the id will be returned
      * @return Client
+     * @throws NoSuchElementException If the client is not found
      */
     public ClientOutputDTO findById(String id, boolean simpleOutput) {
         return clientRepository.findById(id)
@@ -54,6 +55,7 @@ public class ClientService {
      *
      * @param email Client email
      * @return Client
+     * @throws NoSuchElementException If the client is not found
      */
     public ClientOutputDTO findByEmail(String email) {
         return clientRepository.findByEmail(email)
@@ -66,6 +68,7 @@ public class ClientService {
      *
      * @param name Client name or part of it
      * @return List of clients with the given name or part of it
+     * @throws NoSuchElementException If no clients are found
      */
     public List<ClientOutputDTO> findByName(String name) {
         List<Client> clients = clientRepository.findByName(name);
@@ -83,6 +86,7 @@ public class ClientService {
      * @param id Client id
      * @param clientInputDTO Client data
      * @return Updated client
+     * @throws NoSuchElementException If the client is not found
      */
     public ClientOutputDTO updateClient(String id, ClientInputDTO clientInputDTO) {
         Client client = clientRepository.findById(id)

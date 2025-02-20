@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Mapper(componentModel = "spring")
 public interface MerchantMapper {
+
     @Mapping(target = "id", ignore = true)
     Merchant toEntity(MerchantInputDTO merchantInputDTO);
     MerchantOutputDTO toDTO(Merchant merchant);

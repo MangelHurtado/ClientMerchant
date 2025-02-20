@@ -1,7 +1,6 @@
 package com.example.merchantmicroservice.repository;
 
 import com.example.merchantmicroservice.model.Merchant;
-
 import java.util.List;
 import java.util.Optional;
 

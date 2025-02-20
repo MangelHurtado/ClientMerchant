@@ -17,6 +17,12 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
 
     private final DynamoDbTable<Merchant> merchantTable;
 
+    /**
+     * Create a new merchant and stores it in the database
+     *
+     * @param merchant Merchant data to be stored
+     * @return The created merchant with a generated id
+     */
     @Override
     public Merchant create(Merchant merchant) {
         if (merchant.getId() == null) {
@@ -26,6 +32,12 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
         return merchant;
     }
 
+    /**
+     * Find a merchant by id in the database
+     *
+     * @param id Merchant id
+     * @return The merchant if found, empty otherwise
+     */
     @Override
     public Optional<Merchant> findById(String id) {
         Key key = Key.builder()
@@ -35,6 +47,12 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
         return Optional.ofNullable(merchantTable.getItem(key));
     }
 
+    /**
+     * Find a merchant by name or part of it in the database
+     *
+     * @param name Merchant name or part of it
+     * @return The list of merchants found
+     */
     @Override
     public List<Merchant> findByName(String name) {
         return merchantTable.scan().items().stream()
@@ -42,12 +60,24 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Update a merchant in the database
+     *
+     * @param merchant Merchant data to be updated
+     * @return The updated merchant
+     */
     @Override
     public Merchant updateMerchant(Merchant merchant) {
         merchantTable.updateItem(merchant);
         return merchant;
     }
 
+    /**
+     * Find merchants that belong to a client in the database
+     *
+     * @param clientId Client id
+     * @return The list of merchants found
+     */
     @Override
     public List<Merchant> findByClient(String clientId) {
             DynamoDbIndex<Merchant> gsi = merchantTable.index("GSI1");
