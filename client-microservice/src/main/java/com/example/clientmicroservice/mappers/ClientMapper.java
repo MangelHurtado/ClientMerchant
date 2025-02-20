@@ -16,5 +16,4 @@ public interface ClientMapper {
     ClientOutputDTO toDTO(Client client);
 
     void updateEntity(ClientInputDTO clientInputDTO, @MappingTarget Client client);
-
 }

@@ -37,10 +37,14 @@ public class SwaggerConfig {
     }
 
     private ApiKey apiKey() {
+
+        // The name of the header that will be used to pass the JWT token
         return new ApiKey("JWT", "Authorization", "header");
     }
 
     private SecurityContext securityContext() {
+
+        // This method will be used to configure the endpoints that will be secured by JWT. In this case, all endpoints will be secured.
         return SecurityContext.builder()
                 .securityReferences(defaultAuth())
                 .forPaths(PathSelectors.any())
