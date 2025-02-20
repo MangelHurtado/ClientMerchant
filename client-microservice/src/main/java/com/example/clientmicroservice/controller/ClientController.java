@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -19,28 +18,8 @@ public class ClientController {
 
     private final ClientService clientService;
 
-
     @PostMapping
-    public ResponseEntity<ClientOutputDTO> createClient(
-            @RequestParam String name,
-            @RequestParam String surname,
-            @RequestParam String cifNifNie,
-            @RequestParam String phone,
-            @RequestParam String email,
-            HttpServletRequest request) {
-        HttpServletRequest wrappedRequest = (HttpServletRequest) request.getAttribute("wrappedRequest");
-        if (wrappedRequest != null) {
-            request = wrappedRequest;
-        }
-        // Use the modified name from the wrapped request
-        name = request.getParameter("name");
-        // Create the DTO using the parameters received
-        ClientInputDTO clientInputDTO = new ClientInputDTO();
-        clientInputDTO.setName(name);
-        clientInputDTO.setSurname(surname);
-        clientInputDTO.setCifNifNie(cifNifNie);
-        clientInputDTO.setPhone(phone);
-        clientInputDTO.setEmail(email);
+    public ResponseEntity<ClientOutputDTO> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
         return ResponseEntity.ok(clientService.createClient(clientInputDTO));
     }
 
