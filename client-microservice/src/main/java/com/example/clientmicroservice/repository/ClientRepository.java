@@ -1,7 +1,6 @@
 package com.example.clientmicroservice.repository;
 
 import com.example.clientmicroservice.model.Client;
-
 import java.util.List;
 import java.util.Optional;
 

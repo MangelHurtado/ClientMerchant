@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "merchant-microservice", url = "${merchant-service.url}")
 public interface MerchantFeignClient {
+
     @GetMapping("/merchant/{id}")
     Object findById(@PathVariable("id") String merchantId, @RequestParam(required = false, defaultValue = "false") boolean simpleOutput);
 }

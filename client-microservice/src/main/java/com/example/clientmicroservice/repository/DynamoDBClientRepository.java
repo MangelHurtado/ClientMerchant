@@ -18,6 +18,12 @@ public class DynamoDBClientRepository implements ClientRepository {
 
     private final DynamoDbTable<Client> clientTable;
 
+    /**
+     * Create a new client and stores it in the database
+     *
+     * @param client Client data to be stored
+     * @return The created client with a generated id
+     */
     @Override
     public Client create(Client client) {
         String clientId = UUID.randomUUID().toString();
@@ -26,6 +32,12 @@ public class DynamoDBClientRepository implements ClientRepository {
         return client;
     }
 
+    /**
+     * Find a client by id in the database
+     *
+     * @param id Client id to be found
+     * @return The client if found, empty otherwise
+     */
     @Override
     public Optional<Client> findById(String id) {
         Key key = Key.builder()
@@ -36,6 +48,12 @@ public class DynamoDBClientRepository implements ClientRepository {
         return Optional.ofNullable(clientTable.getItem(key));
     }
 
+    /**
+     * Find a client by email in the database
+     *
+     * @param email Client email to be found
+     * @return The client if found, empty otherwise
+     */
     @Override
     public Optional<Client> findByEmail(String email) {
         DynamoDbIndex<Client> gsi = clientTable.index("GSI1");
@@ -49,6 +67,12 @@ public class DynamoDBClientRepository implements ClientRepository {
                 .findFirst();
     }
 
+    /**
+     * Find a client by name or part of it in the database
+     *
+     * @param name Client name or part of it to be found
+     * @return List of clients with the given name or part of it
+     */
     @Override
     public List<Client> findByName(String name) {
         return clientTable.scan().items().stream()
@@ -56,6 +80,12 @@ public class DynamoDBClientRepository implements ClientRepository {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Update a client in the database
+     *
+     * @param client Client data to be updated
+     * @return The updated client
+     */
     @Override
     public Client updateClient(Client client) {
         clientTable.updateItem(client);
