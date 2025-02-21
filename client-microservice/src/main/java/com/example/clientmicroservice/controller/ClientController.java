@@ -80,11 +80,10 @@ public class ClientController {
      * Check if a merchant exists
      *
      * @param merchantId Merchant id
-     * @param simpleOutput If true, only the id will be returned
      * @return Response with the result
      */
     @GetMapping("/check-merchant")
-    public ResponseEntity<Boolean> checkMerchantExists(@RequestParam String merchantId, @RequestParam(required = false, defaultValue = "false") boolean simpleOutput) {
-        return ResponseEntity.ok(clientService.checkMerchantExists(merchantId, simpleOutput));
+    public ResponseEntity<Boolean> checkMerchantExists(@RequestParam String merchantId) {
+        return ResponseEntity.ok(clientService.checkMerchantExists(merchantId));
     }
 }

@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface MerchantFeignClient {
 
     @GetMapping("/merchant/{id}")
-    Object findById(@PathVariable("id") String merchantId, @RequestParam(required = false, defaultValue = "false") boolean simpleOutput);
+    Object findById(@PathVariable("id") String merchantId);
 }
 

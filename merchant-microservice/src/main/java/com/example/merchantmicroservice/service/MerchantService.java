@@ -6,6 +6,7 @@ import com.example.merchantmicroservice.model.dto.MerchantInputDTO;
 import com.example.merchantmicroservice.model.dto.MerchantOutputDTO;
 import com.example.merchantmicroservice.repository.MerchantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MerchantService {
 
     private final MerchantRepository merchantRepository;
@@ -46,8 +48,15 @@ public class MerchantService {
      * @throws NoSuchElementException If the merchant is not found
      */
     public Merchant findById(String id, boolean simpleOutput) {
-        return merchantRepository.findById(id)
+        Merchant merchant = merchantRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Merchant not found"));
+
+        if (simpleOutput) {
+            Merchant voidMerchant = new Merchant();
+            voidMerchant.setId(merchant.getId());
+            return voidMerchant;
+        }
+        return merchant;
     }
 
     /**

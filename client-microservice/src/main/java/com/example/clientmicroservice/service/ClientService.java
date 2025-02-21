@@ -43,8 +43,15 @@ public class ClientService {
      * @throws NoSuchElementException If the client is not found
      */
     public Client findById(String id, boolean simpleOutput) {
-        return clientRepository.findById(id)
+        Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Client not found"));
+
+        if (simpleOutput) {
+            Client voidClient = new Client();
+            voidClient.setId(client.getId());
+            return voidClient;
+        }
+        return client;
     }
 
     /**
@@ -94,12 +101,11 @@ public class ClientService {
      * Check if a merchant exists
      *
      * @param merchantId Merchant id
-     * @param simpleOutput If true, only the id will be returned
      * @return True if the merchant exists, false otherwise
      */
-    public boolean checkMerchantExists(String merchantId, boolean simpleOutput) {
+    public boolean checkMerchantExists(String merchantId) {
         try {
-            merchantFeignClient.findById(merchantId, simpleOutput);
+            merchantFeignClient.findById(merchantId);
             return true;
         } catch (Exception e) {
             return false;
