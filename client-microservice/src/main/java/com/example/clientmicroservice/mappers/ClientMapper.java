@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Mapper(componentModel = "spring")
 public interface ClientMapper {
+
     @Mapping(target = "id", ignore = true)
     Client toEntity(ClientInputDTO clientInputDTO);
     ClientOutputDTO toDTO(Client client);

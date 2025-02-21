@@ -25,7 +25,7 @@ public class MerchantService {
      * @param merchantInputDTO Merchant data
      * @return The created merchant
      */
-    public MerchantOutputDTO createMerchant(MerchantInputDTO merchantInputDTO) {
+    public Merchant createMerchant(MerchantInputDTO merchantInputDTO) {
         Merchant merchant = merchantMapper.toEntity(merchantInputDTO);
 
         if (merchant.getPartitionKey() == null) {
@@ -33,7 +33,7 @@ public class MerchantService {
         }
 
         merchantRepository.create(merchant);
-        return merchantMapper.toDTO(merchant);
+        return merchant;
     }
 
 
@@ -45,9 +45,8 @@ public class MerchantService {
      * @return The merchant
      * @throws NoSuchElementException If the merchant is not found
      */
-    public MerchantOutputDTO findById(String id, boolean simpleOutput) {
+    public Merchant findById(String id, boolean simpleOutput) {
         return merchantRepository.findById(id)
-                .map(merchant -> simpleOutput ? new MerchantOutputDTO(merchant.getId(), null, null, null, null) : merchantMapper.toDTO(merchant))
                 .orElseThrow(() -> new NoSuchElementException("Merchant not found"));
     }
 
@@ -58,14 +57,12 @@ public class MerchantService {
      * @return The list of merchants found
      * @throws NoSuchElementException If no merchants are found
      */
-    public List<MerchantOutputDTO> findByName(String name) {
+    public List<Merchant> findByName(String name) {
         List<Merchant> merchants = merchantRepository.findByName(name);
         if (merchants.isEmpty()) {
             throw new NoSuchElementException("No merchants found with the given name");
         }
-        return merchants.stream()
-                .map(merchantMapper::toDTO)
-                .collect(Collectors.toList());
+        return merchants;
     }
 
     /**
@@ -76,12 +73,12 @@ public class MerchantService {
      * @return The updated merchant
      * @throws NoSuchElementException If the merchant is not found
      */
-    public MerchantOutputDTO updateMerchant(String id, MerchantInputDTO merchantRequest) {
+    public Merchant updateMerchant(String id, MerchantInputDTO merchantRequest) {
         Merchant merchant = merchantRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Merchant not found"));
         merchantMapper.updateEntity(merchantRequest, merchant);
         merchantRepository.updateMerchant(merchant);
-        return merchantMapper.toDTO(merchant);
+        return merchant;
     }
 
     /**
@@ -91,13 +88,11 @@ public class MerchantService {
      * @return The list of merchants found
      * @throws NoSuchElementException If no merchants are found
      */
-    public List<MerchantOutputDTO> findByClient(String clientId) {
+    public List<Merchant> findByClient(String clientId) {
         List<Merchant> merchants = merchantRepository.findByClient(clientId);
         if (merchants.isEmpty()) {
             throw new NoSuchElementException("No merchants found for the given client");
         }
-        return merchants.stream()
-                .map(merchantMapper::toDTO)
-                .collect(Collectors.toList());
+        return merchants;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.merchantmicroservice.controller;
 
+import com.example.merchantmicroservice.mappers.MerchantMapper;
 import com.example.merchantmicroservice.model.dto.MerchantInputDTO;
 import com.example.merchantmicroservice.model.dto.MerchantOutputDTO;
 import com.example.merchantmicroservice.service.MerchantService;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/merchant")
@@ -16,6 +18,7 @@ import java.util.List;
 public class MerchantController {
 
     private final MerchantService merchantService;
+    private final MerchantMapper merchantMapper;
 
     /**
      * Create a new merchant
@@ -25,7 +28,7 @@ public class MerchantController {
      */
     @PostMapping
     public ResponseEntity<MerchantOutputDTO> createMerchant(@Valid @RequestBody MerchantInputDTO merchantInputDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(merchantService.createMerchant(merchantInputDTO));
+        return ResponseEntity.ok(merchantMapper.toDTO(merchantService.createMerchant(merchantInputDTO)));
     }
 
     /**
@@ -37,7 +40,7 @@ public class MerchantController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<MerchantOutputDTO> findById(@PathVariable String id, @RequestParam(required = false, defaultValue = "false") boolean simpleOutput) {
-        return ResponseEntity.ok(merchantService.findById(id, simpleOutput));
+        return ResponseEntity.ok(merchantMapper.toDTO(merchantService.findById(id, simpleOutput)));
     }
 
     /**
@@ -48,7 +51,7 @@ public class MerchantController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<MerchantOutputDTO>> findByName(@RequestParam String name) {
-        return ResponseEntity.ok(merchantService.findByName(name));
+        return ResponseEntity.ok(merchantService.findByName(name).stream().map(merchantMapper::toDTO).collect(Collectors.toList()));
     }
 
     /**
@@ -60,7 +63,7 @@ public class MerchantController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<MerchantOutputDTO> updateMerchant(@PathVariable String id, @Valid @RequestBody MerchantInputDTO merchantInputDTO) {
-        return ResponseEntity.ok(merchantService.updateMerchant(id, merchantInputDTO));
+        return ResponseEntity.ok(merchantMapper.toDTO(merchantService.updateMerchant(id, merchantInputDTO)));
     }
 
     /**
@@ -71,6 +74,6 @@ public class MerchantController {
      */
     @GetMapping("/client/{clientId}")
     public ResponseEntity<List<MerchantOutputDTO>> findByClient(@PathVariable String clientId) {
-        return ResponseEntity.ok(merchantService.findByClient(clientId));
+        return ResponseEntity.ok(merchantService.findByClient(clientId).stream().map(merchantMapper::toDTO).collect(Collectors.toList()));
     }
 }

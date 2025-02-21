@@ -28,10 +28,10 @@ public class ClientService {
      * @param clientInputDTO Client data
      * @return Created client
      */
-    public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) {
+    public Client createClient(ClientInputDTO clientInputDTO) {
         Client client = clientMapper.toEntity(clientInputDTO);
         clientRepository.create(client);
-        return clientMapper.toDTO(client);
+        return client;
     }
 
     /**
@@ -42,11 +42,8 @@ public class ClientService {
      * @return Client
      * @throws NoSuchElementException If the client is not found
      */
-    public ClientOutputDTO findById(String id, boolean simpleOutput) {
+    public Client findById(String id, boolean simpleOutput) {
         return clientRepository.findById(id)
-                .map(client -> simpleOutput ?
-                        new ClientOutputDTO(client.getId(), null, null, null, null, null) :
-                        clientMapper.toDTO(client))
                 .orElseThrow(() -> new NoSuchElementException("Client not found"));
     }
 
@@ -57,9 +54,8 @@ public class ClientService {
      * @return Client
      * @throws NoSuchElementException If the client is not found
      */
-    public ClientOutputDTO findByEmail(String email) {
+    public Client findByEmail(String email) {
         return clientRepository.findByEmail(email)
-                .map(clientMapper::toDTO)
                 .orElseThrow(() -> new NoSuchElementException("Client not found with the given email"));
     }
 
@@ -70,14 +66,12 @@ public class ClientService {
      * @return List of clients with the given name or part of it
      * @throws NoSuchElementException If no clients are found
      */
-    public List<ClientOutputDTO> findByName(String name) {
+    public List<Client> findByName(String name) {
         List<Client> clients = clientRepository.findByName(name);
         if (clients.isEmpty()) {
             throw new NoSuchElementException("No clients found with the given name");
         }
-        return clients.stream()
-                .map(clientMapper::toDTO)
-                .collect(Collectors.toList());
+        return clients;
     }
 
     /**
@@ -88,12 +82,12 @@ public class ClientService {
      * @return Updated client
      * @throws NoSuchElementException If the client is not found
      */
-    public ClientOutputDTO updateClient(String id, ClientInputDTO clientInputDTO) {
+    public Client updateClient(String id, ClientInputDTO clientInputDTO) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Client not found"));
         clientMapper.updateEntity(clientInputDTO, client);
         clientRepository.updateClient(client);
-        return clientMapper.toDTO(client);
+        return client;
     }
 
     /**

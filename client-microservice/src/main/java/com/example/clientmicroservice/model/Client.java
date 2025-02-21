@@ -28,7 +28,6 @@ public class Client extends MainTable {
         setSortKey(CLIENT_SK_PREFIX);
     }
 
-    @DynamoDbIgnore
     public String getId() {
         return getPartitionKey().substring(CLIENT_PK_PREFIX.length());
     }

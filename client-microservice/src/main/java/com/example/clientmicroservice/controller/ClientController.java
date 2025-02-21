@@ -1,5 +1,6 @@
 package com.example.clientmicroservice.controller;
 
+import com.example.clientmicroservice.mappers.ClientMapper;
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
 import com.example.clientmicroservice.service.ClientService;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/client")
@@ -15,6 +17,7 @@ import java.util.List;
 public class ClientController {
 
     private final ClientService clientService;
+    private final ClientMapper clientMapper;
 
     /**
      * Create a new client
@@ -24,7 +27,7 @@ public class ClientController {
      */
     @PostMapping
     public ResponseEntity<ClientOutputDTO> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
-        return ResponseEntity.ok(clientService.createClient(clientInputDTO));
+        return ResponseEntity.ok(clientMapper.toDTO(clientService.createClient(clientInputDTO)));
     }
 
     /**
@@ -36,7 +39,7 @@ public class ClientController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ClientOutputDTO> findById(@PathVariable String id,  @RequestParam(required = false) boolean simpleOutput) {
-        return ResponseEntity.ok(clientService.findById(id, simpleOutput));
+        return ResponseEntity.ok(clientMapper.toDTO(clientService.findById(id, simpleOutput)));
     }
 
     /**
@@ -47,7 +50,7 @@ public class ClientController {
      */
     @GetMapping("/search/by-email")
     public ResponseEntity<ClientOutputDTO> findByEmail(@RequestParam String email) {
-        return ResponseEntity.ok(clientService.findByEmail(email));
+        return ResponseEntity.ok(clientMapper.toDTO(clientService.findByEmail(email)));
     }
 
     /**
@@ -58,7 +61,7 @@ public class ClientController {
      */
     @GetMapping("/search/by-name")
     public ResponseEntity<List<ClientOutputDTO>> findByName(@RequestParam String name) {
-        return ResponseEntity.ok(clientService.findByName(name));
+        return ResponseEntity.ok(clientService.findByName(name).stream().map(clientMapper::toDTO).collect(Collectors.toList()));
     }
 
     /**
@@ -70,7 +73,7 @@ public class ClientController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ClientOutputDTO> updateClient(@PathVariable String id, @Valid @RequestBody ClientInputDTO clientInputDTO) {
-        return ResponseEntity.ok(clientService.updateClient(id, clientInputDTO));
+        return ResponseEntity.ok(clientMapper.toDTO(clientService.updateClient(id, clientInputDTO)));
     }
 
     /**
