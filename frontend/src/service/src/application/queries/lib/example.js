@@ -1,19 +1,18 @@
-import manageRequest from '@/domain/manageRequest';
+import manageRequest from "@/domain/manageRequest"
 
 const exampleUseCases = {
   example: (signal, values, token) => {
-    
     return manageRequest(
       signal,
-      'exampleQuery',
+      "exampleQuery",
       values,
-      'query',
-      'normal',
-      'get',
+      "query",
+      "normal",
+      "get",
       token,
       undefined,
-    );
+    )
   },
-};
+}
 
-export default exampleUseCases;
+export default exampleUseCases

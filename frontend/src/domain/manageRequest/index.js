@@ -1,6 +1,6 @@
-import { METHODS, QUERIES } from './lib/index';
+import { METHODS, QUERIES } from "./lib/index"
 
-const METHODS_WITH_BODY = ['put', 'post', 'patch'];
+const METHODS_WITH_BODY = ["put", "post", "patch"]
 
 /**
  * Gestor que maneja con ayuda de una librería de queries y de methods toda la gestión de pedir datos
@@ -22,11 +22,11 @@ const manageRequest = async (
   signal,
   requestString,
   params = {},
-  mode = 'normal',
-  responseType = 'normal',
-  method = 'get',
+  mode = "normal",
+  responseType = "normal",
+  method = "get",
   token,
-  cache = 'no-store',
+  cache = "no-store",
   headers = {},
   commonBody = true,
   queryParams = {},
@@ -43,59 +43,59 @@ const manageRequest = async (
             ...headers,
           }
         : { ...headers },
-    };
+    }
 
-    let url = QUERIES[requestString](queryParams);
-    if (mode === 'query') {
-      if (typeof params === 'string') {
-        url += `?${params}`;
+    let url = QUERIES[requestString](queryParams)
+    if (mode === "query") {
+      if (typeof params === "string") {
+        url += `?${params}`
       } else {
         const dataForSend = Object.keys(params)
           .map(
-            (k) => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]),
+            (k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]),
           )
-          .join('&');
-        url += `?${dataForSend}`;
+          .join("&")
+        url += `?${dataForSend}`
       }
-    } else if (mode === 'url') {
-      url += Object.values(params).map((v) => '/' + encodeURIComponent(v));
+    } else if (mode === "url") {
+      url += Object.values(params).map((v) => "/" + encodeURIComponent(v))
     } else if (
       METHODS_WITH_BODY.includes(method.toLowerCase()) ||
-      mode === 'body'
+      mode === "body"
     ) {
-      fetchConfig['body'] = commonBody ? JSON.stringify(params) : params;
+      fetchConfig["body"] = commonBody ? JSON.stringify(params) : params
     }
-    const response = await fetch(url, fetchConfig);
-    const responseBody = await response.text();
+    const response = await fetch(url, fetchConfig)
+    const responseBody = await response.text()
 
     if (!response.ok) {
-      console.error('[FETCH_ERROR]', response);
+      console.error("[FETCH_ERROR]", response)
       throw {
         params,
         query: requestString,
         status: response.status,
         statusText: response.statusText,
         body: responseBody && JSON.parse(responseBody),
-      };
+      }
     }
 
     if (response.status === 204 || !responseBody) {
       return METHODS[requestString](
         { data: null, config: { url, ...fetchConfig } },
         requestString,
-      );
+      )
     }
 
-    const responseData = JSON.parse(responseBody);
+    const responseData = JSON.parse(responseBody)
 
     return METHODS[requestString](
       { data: responseData, config: { url, ...fetchConfig } },
       requestString,
-    );
+    )
   } catch (error) {
-    console.error('[FETCH_CONFIG_ERROR]', error);
-    throw error;
+    console.error("[FETCH_CONFIG_ERROR]", error)
+    throw error
   }
-};
+}
 
-export default manageRequest;
+export default manageRequest
