@@ -104,4 +104,18 @@ public class MerchantService {
         }
         return merchants;
     }
+
+    /**
+     * Find all merchants
+     *
+     * @return The list of merchants found
+     * @throws NoSuchElementException If no merchants are found
+     */
+    public List<Merchant> findAll() {
+        List<Merchant> merchants = merchantRepository.findAll();
+        if (merchants.isEmpty()) {
+            throw new NoSuchElementException("No merchants found");
+        }
+        return merchants;
+    }
 }

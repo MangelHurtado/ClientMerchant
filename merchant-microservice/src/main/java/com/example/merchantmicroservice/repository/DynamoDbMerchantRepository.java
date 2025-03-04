@@ -90,4 +90,16 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
             results.forEach(page -> merchants.addAll(page.items()));
             return merchants;
     }
+
+    /**
+     * Find all merchants in the database
+     *
+     * @return The list of merchants found
+     */
+    @Override
+    public List<Merchant> findAll() {
+        return merchantTable.scan().items().stream()
+                .filter(m -> m.getPartitionKey().startsWith("MERCHANT#"))
+                .collect(Collectors.toList());
+    }
 }

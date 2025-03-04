@@ -76,4 +76,14 @@ public class MerchantController {
     public ResponseEntity<List<MerchantOutputDTO>> findByClient(@PathVariable String clientId) {
         return ResponseEntity.ok(merchantService.findByClient(clientId).stream().map(merchantMapper::toDTO).collect(Collectors.toList()));
     }
+
+    /**
+     * Find all merchants
+     *
+     * @return Response with the merchant list found
+     */
+    @GetMapping
+    public ResponseEntity<List<MerchantOutputDTO>> findAll() {
+        return ResponseEntity.ok(merchantService.findAll().stream().map(merchantMapper::toDTO).collect(Collectors.toList()));
+    }
 }

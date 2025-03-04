@@ -9,6 +9,6 @@ public interface MerchantRepository {
     Optional<Merchant> findById(String id);
     List<Merchant> findByName(String name);
     Merchant updateMerchant(Merchant merchant);
-
     List<Merchant> findByClient(String clientId);
+    List<Merchant> findAll();
 }
