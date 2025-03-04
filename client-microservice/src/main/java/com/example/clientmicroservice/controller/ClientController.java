@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/client")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class ClientController {
 
     private final ClientService clientService;

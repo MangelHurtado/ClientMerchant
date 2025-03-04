@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/merchant")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class MerchantController {
 
     private final MerchantService merchantService;
