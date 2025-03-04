@@ -10,4 +10,5 @@ public interface ClientRepository {
     Optional<Client> findByEmail(String email);
     List<Client> findByName(String name);
     Client updateClient(Client client);
+    List<Client> findAll();
 }

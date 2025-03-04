@@ -111,4 +111,18 @@ public class ClientService {
             return false;
         }
     }
+
+    /**
+     * Find all clients
+     *
+     * @return List of all clients
+     * @throws NoSuchElementException If no clients are found
+     */
+    public List<Client> findAll() {
+        List<Client> clients = clientRepository.findAll();
+        if (clients.isEmpty()) {
+            throw new NoSuchElementException("No clients found");
+        }
+        return clients;
+    }
 }

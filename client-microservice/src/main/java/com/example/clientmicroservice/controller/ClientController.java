@@ -86,4 +86,14 @@ public class ClientController {
     public ResponseEntity<Boolean> checkMerchantExists(@RequestParam String merchantId) {
         return ResponseEntity.ok(clientService.checkMerchantExists(merchantId));
     }
+
+    /**
+     * Find all clients
+     *
+     * @return Response with the client list found
+     */
+    @GetMapping
+    public ResponseEntity<List<ClientOutputDTO>> findAll() {
+        return ResponseEntity.ok(clientService.findAll().stream().map(clientMapper::toDTO).collect(Collectors.toList()));
+    }
 }

@@ -91,4 +91,16 @@ public class DynamoDBClientRepository implements ClientRepository {
         clientTable.updateItem(client);
         return client;
     }
+
+    /**
+     * Find all clients in the database
+     *
+     * @return List of all clients
+     */
+    @Override
+    public List<Client> findAll() {
+        return clientTable.scan().items().stream()
+                .filter(c -> c.getPartitionKey().startsWith("CLIENT#"))
+                .collect(Collectors.toList());
+    }
 }
