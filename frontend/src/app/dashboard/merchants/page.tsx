@@ -1,23 +1,10 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import { Table } from "antd"
 import useCases from "@/service/src/application"
+import { Merchant } from "@/common/types/merchant"
+import { CSSProperties } from "react"
 
-const MerchantsPage = () => {
-  const [merchants, setMerchants] = useState([])
-
-  useEffect(() => {
-    const loadMerchants = async () => {
-      try {
-        const data = await useCases.getMerchants()
-        setMerchants(data)
-      } catch (error) {
-        console.error("Error cargando merchants:", error)
-      }
-    }
-    loadMerchants()
-  }, [])
+const MerchantsPage = async () => {
+  const merchants: Merchant[] = await useCases.getMerchants()
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
@@ -26,7 +13,19 @@ const MerchantsPage = () => {
     { title: "Tipo", dataIndex: "merchantType", key: "merchantType" },
   ]
 
-  return <Table dataSource={merchants} columns={columns} rowKey="id" />
+  const paginationStyle: CSSProperties = {
+    display: "flex",
+    justifyContent: "center",
+  }
+
+  return (
+    <Table
+      dataSource={merchants}
+      columns={columns}
+      rowKey="id"
+      pagination={{ position: ["bottomCenter"], style: paginationStyle }}
+    />
+  )
 }
 
 export default MerchantsPage

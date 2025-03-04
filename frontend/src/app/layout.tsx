@@ -5,6 +5,7 @@ import "./globals.css"
 import { Layout, Menu } from "antd"
 import { HomeOutlined } from "@ant-design/icons"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,14 +25,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const pathname = usePathname()
+  const headerTitle =
+    pathname === "/dashboard/merchants"
+      ? "Merchants"
+      : pathname === "/dashboard/clients"
+      ? "Clients"
+      : "Client-Merchant management application"
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Layout className="min-h-screen">
-          <Header className="bg-[#001529] text-white text-center p-0">
-            Client-Merchant management application
+          <Header className="bg-[#001529] text-white text-center p-0 flex items-center justify-center">
+            <h1 className="text-xl font-bold">{headerTitle}</h1>
           </Header>
           <Layout>
             <Sider className="overflow-auto relative">
