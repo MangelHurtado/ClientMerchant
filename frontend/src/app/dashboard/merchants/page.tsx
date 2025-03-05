@@ -6,6 +6,9 @@ import { Merchant } from "@/common/types/merchant"
 import { CSSProperties, useEffect, useState, useCallback } from "react"
 import { SearchClientComponent } from "@/common/components/ClientComponent/Delivery"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useDebouncedCallback } from "use-debounce"
+
+const WAIT_BETWEEN_CHANGE = 300
 
 const MerchantsPage = () => {
   const router = useRouter()
@@ -32,7 +35,7 @@ const MerchantsPage = () => {
     }
   }, [fetchAllMerchants, searchParams])
 
-  const handleSearch = useCallback(
+  const handleSearch = useDebouncedCallback(
     async (type: "id" | "name", value: string) => {
       setIsLoading(true)
       try {
@@ -63,7 +66,8 @@ const MerchantsPage = () => {
         setIsLoading(false)
       }
     },
-    [fetchAllMerchants, router]
+    WAIT_BETWEEN_CHANGE,
+    { maxWait: WAIT_BETWEEN_CHANGE * 2 }
   )
 
   const columns = [
