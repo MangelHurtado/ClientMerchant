@@ -1,6 +1,17 @@
 import manageRequest from "@/domain/manageRequest"
 
 const merchantsUseCases = {
+  createMerchant: (signal, merchant, token) => {
+    return manageRequest(
+      signal,
+      "createMerchant",
+      merchant,
+      "command",
+      "normal",
+      "post",
+      token
+    )
+  },
   getMerchants: (signal, token) => {
     return manageRequest(
       signal,
@@ -40,6 +51,21 @@ const merchantsUseCases = {
       {},
       true,
       String(name)
+    )
+  },
+  updateMerchant: (signal, merchant, token, id) => {
+    return manageRequest(
+      signal,
+      "updateMerchant",
+      merchant,
+      "command",
+      "normal",
+      "put",
+      token,
+      "no-store",
+      {},
+      true,
+      id
     )
   },
 }

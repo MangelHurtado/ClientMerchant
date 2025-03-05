@@ -1,10 +1,12 @@
 "use client"
 
-import { Table } from "antd"
+import { Table, Button } from "antd"
+import { EditOutlined, PlusOutlined } from "@ant-design/icons"
 import useCases from "@/service/src/application"
 import { Merchant } from "@/common/types/merchant"
 import { CSSProperties, useEffect, useState, useCallback } from "react"
-import { SearchClientComponent } from "@/common/components/ClientComponent/Delivery"
+import { MerchantFormComponent } from "@/common/components/MerchantComponent/Delivery"
+import { SearchMerchantComponent } from "@/common/components/MerchantComponent/Delivery"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useDebouncedCallback } from "use-debounce"
 
@@ -16,6 +18,10 @@ const MerchantsPage = () => {
   const [merchants, setMerchants] = useState<Merchant[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedMerchant, setSelectedMerchant] = useState<
+    Merchant | undefined
+  >(undefined)
 
   const fetchAllMerchants = useCallback(async () => {
     try {
@@ -79,11 +85,66 @@ const MerchantsPage = () => {
     { maxWait: WAIT_BETWEEN_CHANGE * 2 }
   )
 
+  const handleCreate = async (values: Merchant) => {
+    try {
+      setIsLoading(true)
+      await useCases.createMerchant(null, values)
+      await fetchAllMerchants()
+      setIsModalVisible(false)
+    } catch (error) {
+      console.error("Error creating merchant:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleUpdate = async (values: Merchant) => {
+    if (!selectedMerchant?.id) return
+
+    try {
+      setIsLoading(true)
+      await useCases.updateMerchant(
+        null,
+        values,
+        undefined,
+        selectedMerchant.id
+      )
+      await fetchAllMerchants()
+      setIsModalVisible(false)
+      setSelectedMerchant(undefined)
+    } catch (error) {
+      console.error("Error updating merchant:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleOpenModal = (merchant?: Merchant) => {
+    setSelectedMerchant(merchant)
+    setIsModalVisible(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false)
+    setSelectedMerchant(undefined)
+  }
+
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Address", dataIndex: "address", key: "address" },
     { title: "Type", dataIndex: "merchantType", key: "merchantType" },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_: unknown, record: Merchant) => (
+        <Button
+          type="text"
+          icon={<EditOutlined />}
+          onClick={() => handleOpenModal(record)}
+        />
+      ),
+    },
   ]
 
   const paginationStyle: CSSProperties = {
@@ -93,11 +154,20 @@ const MerchantsPage = () => {
 
   return (
     <div className="h-full w-full p-4">
-      <SearchClientComponent
-        onSearch={handleSearch}
-        initialType={(searchParams.get("type") as "id" | "name") || "name"}
-        initialValue={searchParams.get("value") || ""}
-      />
+      <div className="flex justify-between mb-4">
+        <SearchMerchantComponent
+          onSearch={handleSearch}
+          initialType={(searchParams.get("type") as "id" | "name") || "name"}
+          initialValue={searchParams.get("value") || ""}
+        />
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => handleOpenModal()}
+        >
+          Crear Merchant
+        </Button>
+      </div>
       <Table
         className="w-full"
         dataSource={merchants}
@@ -115,6 +185,12 @@ const MerchantsPage = () => {
           },
         }}
         loading={isLoading}
+      />
+      <MerchantFormComponent
+        visible={isModalVisible}
+        initialValues={selectedMerchant}
+        onSubmit={selectedMerchant ? handleUpdate : handleCreate}
+        onCancel={handleCloseModal}
       />
     </div>
   )
