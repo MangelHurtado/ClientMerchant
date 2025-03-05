@@ -29,7 +29,7 @@ const manageRequest = async (
   cache = "no-store",
   headers = {},
   commonBody = true,
-  queryParams = {},
+  queryParams = {}
 ) => {
   try {
     let fetchConfig = {
@@ -48,14 +48,22 @@ const manageRequest = async (
     let url = QUERIES[requestString](queryParams)
     if (mode === "query") {
       if (typeof params === "string") {
-        url += `?${params}`
+        if (url.includes("?")) {
+          url += `&${params}`
+        } else {
+          url += `?${params}`
+        }
       } else {
         const dataForSend = Object.keys(params)
           .map(
-            (k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]),
+            (k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k])
           )
           .join("&")
-        url += `?${dataForSend}`
+        if (url.includes("?")) {
+          url += `&${dataForSend}`
+        } else {
+          url += `?${dataForSend}`
+        }
       }
     } else if (mode === "url") {
       url += Object.values(params).map((v) => "/" + encodeURIComponent(v))
@@ -82,7 +90,7 @@ const manageRequest = async (
     if (response.status === 204 || !responseBody) {
       return METHODS[requestString](
         { data: null, config: { url, ...fetchConfig } },
-        requestString,
+        requestString
       )
     }
 
@@ -90,7 +98,7 @@ const manageRequest = async (
 
     return METHODS[requestString](
       { data: responseData, config: { url, ...fetchConfig } },
-      requestString,
+      requestString
     )
   } catch (error) {
     console.error("[FETCH_CONFIG_ERROR]", error)

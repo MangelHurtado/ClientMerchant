@@ -1,7 +1,1 @@
-import { FC } from "react"
-
-const Example: FC = () => {
-  return <>Example</>
-}
-
-export default Example
+export { default as SearchClientComponent } from "./components/SearchClientComponent"
