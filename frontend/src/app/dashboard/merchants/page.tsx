@@ -19,12 +19,15 @@ const MerchantsPage = async () => {
   }
 
   return (
-    <Table
-      dataSource={merchants}
-      columns={columns}
-      rowKey="id"
-      pagination={{ position: ["bottomCenter"], style: paginationStyle }}
-    />
+    <div className="h-full w-full flex items-center">
+      <Table
+        className="w-full"
+        dataSource={merchants}
+        columns={columns}
+        rowKey="id"
+        pagination={{ position: ["bottomCenter"], style: paginationStyle }}
+      />
+    </div>
   )
 }
 
