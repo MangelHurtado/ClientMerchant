@@ -8,9 +8,9 @@ const MerchantsPage = async () => {
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Nombre", dataIndex: "name", key: "name" },
-    { title: "Dirección", dataIndex: "address", key: "address" },
-    { title: "Tipo", dataIndex: "merchantType", key: "merchantType" },
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Address", dataIndex: "address", key: "address" },
+    { title: "Type", dataIndex: "merchantType", key: "merchantType" },
   ]
 
   const paginationStyle: CSSProperties = {

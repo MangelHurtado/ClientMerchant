@@ -1,9 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import localFont from "next/font/local"
 import "./globals.css"
-import { Layout, Menu } from "antd"
-import { HomeOutlined } from "@ant-design/icons"
+import { Layout, Menu, Button, ConfigProvider, theme, Tooltip } from "antd"
+import { HomeOutlined, BulbOutlined } from "@ant-design/icons"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -25,6 +26,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const [darkMode, setDarkMode] = useState(false)
   const pathname = usePathname()
   const headerTitle =
     pathname === "/dashboard/merchants"
@@ -38,48 +40,67 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Layout className="min-h-screen">
-          <Header className="bg-[#001529] text-white text-center p-0 flex items-center justify-center">
-            <h1 className="text-xl font-bold">{headerTitle}</h1>
-          </Header>
-          <Layout>
-            <Sider className="overflow-auto relative">
-              <Menu
-                className="h-full border-r-0"
-                mode="inline"
-                defaultOpenKeys={["dashboard"]}
-                items={[
-                  {
-                    label: <Link href="/">Home</Link>,
-                    key: "home",
-                    icon: <HomeOutlined />,
-                  },
-                  {
-                    label: "Dashboard",
-                    key: "dashboard",
-                    children: [
-                      {
-                        label: <Link href="/dashboard/clients">Clients</Link>,
-                        key: "clients",
-                      },
-                      {
-                        label: (
-                          <Link href="/dashboard/merchants">Merchants</Link>
-                        ),
-                        key: "merchants",
-                      },
-                    ],
-                  },
-                ]}
-              ></Menu>
-              <Menu
-                className="absolute bottom-0 w-full border-r-0"
-                items={[{ label: "Signout", key: "signout", danger: true }]}
-              ></Menu>
-            </Sider>
-            <Content className="p-0 px-6 min-h-[280px]">{children}</Content>
+        <ConfigProvider
+          theme={{
+            algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+          }}
+        >
+          <Layout className="min-h-screen">
+            <Header className="bg-[#001529] text-white text-center p-0 flex items-center justify-between px-4">
+              <h1 className="text-xl font-bold">{headerTitle}</h1>
+              <Tooltip
+                title={
+                  darkMode ? "Switch to light mode" : "Switch to dark mode"
+                }
+                placement="right"
+              >
+                <Button
+                  type="default"
+                  icon={<BulbOutlined />}
+                  onClick={() => setDarkMode(!darkMode)}
+                  className="ml-auto"
+                />
+              </Tooltip>
+            </Header>
+            <Layout>
+              <Sider className="overflow-auto relative">
+                <Menu
+                  className="h-full border-r-0"
+                  mode="inline"
+                  defaultOpenKeys={["dashboard"]}
+                  items={[
+                    {
+                      label: <Link href="/">Home</Link>,
+                      key: "home",
+                      icon: <HomeOutlined />,
+                    },
+                    {
+                      label: "Dashboard",
+                      key: "dashboard",
+                      children: [
+                        {
+                          label: <Link href="/dashboard/clients">Clients</Link>,
+                          key: "clients",
+                        },
+                        {
+                          label: (
+                            <Link href="/dashboard/merchants">Merchants</Link>
+                          ),
+                          key: "merchants",
+                        },
+                      ],
+                    },
+                  ]}
+                ></Menu>
+                <Menu
+                  className="absolute bottom-0 w-full border-r-0"
+                  items={[{ label: "Signout", key: "signout", danger: true }]}
+                ></Menu>
+              </Sider>
+              <Content className="p-0 px-6 min-h-[280px]">{children}</Content>
+            </Layout>
           </Layout>
-        </Layout>
+        </ConfigProvider>
       </body>
     </html>
   )
