@@ -46,21 +46,22 @@ export default function RootLayout({
           }}
         >
           <Layout className="min-h-screen">
-            <Header className="bg-[#001529] text-white text-center p-0 flex items-center justify-between px-4">
+            <Header className="bg-[#001529] text-white text-center p-0 flex items-center justify-center px-4 relative">
               <h1 className="text-xl font-bold">{headerTitle}</h1>
-              <Tooltip
-                title={
-                  darkMode ? "Switch to light mode" : "Switch to dark mode"
-                }
-                placement="right"
-              >
-                <Button
-                  type="default"
-                  icon={<BulbOutlined />}
-                  onClick={() => setDarkMode(!darkMode)}
-                  className="ml-auto"
-                />
-              </Tooltip>
+              <div className="absolute right-4">
+                <Tooltip
+                  title={
+                    darkMode ? "Switch to light mode" : "Switch to dark mode"
+                  }
+                  placement="right"
+                >
+                  <Button
+                    type="default"
+                    icon={<BulbOutlined />}
+                    onClick={() => setDarkMode(!darkMode)}
+                  />
+                </Tooltip>
+              </div>
             </Header>
             <Layout>
               <Sider className="overflow-auto relative">
