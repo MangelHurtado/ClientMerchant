@@ -5,8 +5,11 @@ import useCases from "@/service/src/application"
 import { Merchant } from "@/common/types/merchant"
 import { CSSProperties, useEffect, useState, useCallback } from "react"
 import { SearchClientComponent } from "@/common/components/ClientComponent/Delivery"
+import { useRouter, useSearchParams } from "next/navigation"
 
 const MerchantsPage = () => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [merchants, setMerchants] = useState<Merchant[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -20,8 +23,14 @@ const MerchantsPage = () => {
   }, [])
 
   useEffect(() => {
-    fetchAllMerchants()
-  }, [fetchAllMerchants])
+    const type = (searchParams.get("type") as "id" | "name") || "name"
+    const value = searchParams.get("value") || ""
+    if (value) {
+      handleSearch(type, value)
+    } else {
+      fetchAllMerchants()
+    }
+  }, [fetchAllMerchants, searchParams])
 
   const handleSearch = useCallback(
     async (type: "id" | "name", value: string) => {
@@ -29,7 +38,14 @@ const MerchantsPage = () => {
       try {
         if (!value.trim()) {
           await fetchAllMerchants()
+          const params = new URLSearchParams()
+          router.replace(`/dashboard/merchants?${params.toString()}`)
         } else {
+          const params = new URLSearchParams()
+          params.set("type", type)
+          params.set("value", value)
+          router.replace(`/dashboard/merchants?${params.toString()}`)
+
           if (type === "id") {
             const result = await useCases.findById(null, value)
             setMerchants(result ? [result] : [])
@@ -47,7 +63,7 @@ const MerchantsPage = () => {
         setIsLoading(false)
       }
     },
-    [fetchAllMerchants]
+    [fetchAllMerchants, router]
   )
 
   const columns = [
@@ -64,7 +80,11 @@ const MerchantsPage = () => {
 
   return (
     <div className="h-full w-full p-4">
-      <SearchClientComponent onSearch={handleSearch} />
+      <SearchClientComponent
+        onSearch={handleSearch}
+        initialType={(searchParams.get("type") as "id" | "name") || "name"}
+        initialValue={searchParams.get("value") || ""}
+      />
       <Table
         className="w-full"
         dataSource={merchants}

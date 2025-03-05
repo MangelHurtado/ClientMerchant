@@ -5,11 +5,17 @@ import { useEffect, useState } from "react"
 
 interface SearchClientComponentProps {
   onSearch: (type: "id" | "name", value: string) => void
+  initialValue?: string
+  initialType?: "id" | "name"
 }
 
-const SearchClientComponent = ({ onSearch }: SearchClientComponentProps) => {
-  const [searchType, setSearchType] = useState<"id" | "name">("name")
-  const [searchValue, setSearchValue] = useState("")
+const SearchClientComponent = ({
+  onSearch,
+  initialValue = "",
+  initialType = "name",
+}: SearchClientComponentProps) => {
+  const [searchType, setSearchType] = useState<"id" | "name">(initialType)
+  const [searchValue, setSearchValue] = useState(initialValue)
 
   useEffect(() => {
     onSearch(searchType, searchValue)
