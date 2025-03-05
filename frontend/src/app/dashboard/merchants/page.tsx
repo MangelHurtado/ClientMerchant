@@ -15,6 +15,7 @@ const MerchantsPage = () => {
   const searchParams = useSearchParams()
   const [merchants, setMerchants] = useState<Merchant[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const fetchAllMerchants = useCallback(async () => {
     try {
@@ -28,25 +29,33 @@ const MerchantsPage = () => {
   useEffect(() => {
     const type = (searchParams.get("type") as "id" | "name") || "name"
     const value = searchParams.get("value") || ""
+    const page = parseInt(searchParams.get("page") || "1", 10)
+    setCurrentPage(page)
+
     if (value) {
-      handleSearch(type, value)
-    } else {
+      handleSearch(type, value, page.toString())
+    } else if (!value) {
       fetchAllMerchants()
     }
   }, [fetchAllMerchants, searchParams])
 
   const handleSearch = useDebouncedCallback(
-    async (type: "id" | "name", value: string) => {
+    async (type: "id" | "name", value: string, pageParam?: string) => {
       setIsLoading(true)
       try {
         if (!value.trim()) {
           await fetchAllMerchants()
           const params = new URLSearchParams()
+          const currentPage = searchParams.get("page")
+          if (currentPage) {
+            params.set("page", currentPage)
+          }
           router.replace(`/dashboard/merchants?${params.toString()}`)
         } else {
           const params = new URLSearchParams()
           params.set("type", type)
           params.set("value", value)
+          params.set("page", pageParam || "1")
           router.replace(`/dashboard/merchants?${params.toString()}`)
 
           if (type === "id") {
@@ -94,7 +103,17 @@ const MerchantsPage = () => {
         dataSource={merchants}
         columns={columns}
         rowKey="id"
-        pagination={{ position: ["bottomCenter"], style: paginationStyle }}
+        pagination={{
+          position: ["bottomCenter"],
+          pageSize: 5,
+          current: currentPage,
+          style: paginationStyle,
+          onChange: (page) => {
+            const params = new URLSearchParams(searchParams.toString())
+            params.set("page", page.toString())
+            router.replace(`/dashboard/merchants?${params.toString()}`)
+          },
+        }}
         loading={isLoading}
       />
     </div>
