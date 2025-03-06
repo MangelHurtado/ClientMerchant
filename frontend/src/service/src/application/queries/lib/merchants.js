@@ -9,7 +9,9 @@ const merchantsUseCases = {
       "command",
       "normal",
       "post",
-      token
+      token,
+      "no-store",
+      { "Content-Type": "application/json" }
     )
   },
   getMerchants: (signal, token) => {
@@ -63,7 +65,7 @@ const merchantsUseCases = {
       "put",
       token,
       "no-store",
-      {},
+      { "Content-Type": "application/json" },
       true,
       id
     )

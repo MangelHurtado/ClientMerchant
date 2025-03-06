@@ -162,10 +162,11 @@ const MerchantsPage = () => {
         />
         <Button
           type="primary"
+          ghost
           icon={<PlusOutlined />}
           onClick={() => handleOpenModal()}
         >
-          Crear Merchant
+          Create Merchant
         </Button>
       </div>
       <Table
