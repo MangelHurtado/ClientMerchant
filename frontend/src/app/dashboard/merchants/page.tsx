@@ -1,6 +1,7 @@
 "use client"
 
 import { CSSProperties, useEffect, useState } from "react"
+import { useTheme } from "@/app/context/ThemeContext"
 
 import { useRouter, useSearchParams } from "next/navigation"
 
@@ -11,6 +12,7 @@ import useCases from "@/service/src/application"
 
 import { EditOutlined, PlusOutlined } from "@ant-design/icons"
 import { Table, Button } from "antd"
+import { useThemedNotification } from "@/app/hooks/useThemedNotification"
 
 import { useDebouncedCallback } from "use-debounce"
 
@@ -20,6 +22,7 @@ const MerchantsPage = () => {
   //State management
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { notifySuccess, notifyError } = useThemedNotification()
   const [merchants, setMerchants] = useState<Merchant[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
@@ -57,12 +60,32 @@ const MerchantsPage = () => {
   }
 
   //Merchant operation management (create, update)
-  const handleMerchantOperation = async (operation: () => Promise<void>) => {
+  const handleMerchantOperation = async (
+    operation: () => Promise<void>,
+    actionType: "create" | "update"
+  ) => {
     await withLoadingState(async () => {
-      await operation()
-      await fetchAndUpdateMerchants()
-      setIsModalVisible(false)
-      setSelectedMerchant(undefined)
+      try {
+        await operation()
+        await fetchAndUpdateMerchants()
+        setIsModalVisible(false)
+        setSelectedMerchant(undefined)
+        notifySuccess({
+          message: `Merchant ${
+            actionType === "create" ? "created" : "updated"
+          }`,
+        })
+      } catch (error) {
+        notifyError({
+          message: `Error ${
+            actionType === "create" ? "creating" : "updating"
+          } merchant`,
+          description:
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred",
+        })
+      }
     })
   }
 
@@ -118,7 +141,7 @@ const MerchantsPage = () => {
   const handleCreate = (values: Merchant) => {
     handleMerchantOperation(async () => {
       await useCases.createMerchant(null, values)
-    })
+    }, "create")
   }
 
   //Update merchant management
@@ -131,7 +154,7 @@ const MerchantsPage = () => {
         undefined,
         selectedMerchant.id
       )
-    })
+    }, "update")
   }
 
   //Initial load management
