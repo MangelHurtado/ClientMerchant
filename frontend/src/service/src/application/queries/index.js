@@ -1,17 +1,8 @@
-/* import exampleUseCases from "./lib/example"
-
-const queries = {
-  ...exampleUseCases,
-}
-
-export default queries
- */
-
-import exampleUseCases from "./lib/example"
+import clientsUseCases from "./lib/clients"
 import merchantsUseCases from "./lib/merchants"
 
 const queries = {
-  ...exampleUseCases,
+  ...clientsUseCases,
   ...merchantsUseCases,
 }
 

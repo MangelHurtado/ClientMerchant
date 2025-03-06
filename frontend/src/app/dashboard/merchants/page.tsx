@@ -1,13 +1,13 @@
 "use client"
 
 import { CSSProperties, useEffect, useState } from "react"
-import { useTheme } from "@/app/context/ThemeContext"
-
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { Merchant } from "@/common/types/merchant"
-import { MerchantFormComponent } from "@/common/components/MerchantComponent/Delivery"
-import { SearchMerchantComponent } from "@/common/components/MerchantComponent/Delivery"
+import {
+  MerchantFormComponent,
+  SearchMerchantComponent,
+} from "@/common/components/MerchantComponent/Delivery"
 import useCases from "@/service/src/application"
 
 import { EditOutlined, PlusOutlined } from "@ant-design/icons"

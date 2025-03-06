@@ -1,22 +1,22 @@
 "use client"
 
 import { Modal, Form, Input, Select, Button } from "antd"
-import { Merchant } from "@/common/types/merchant"
+import { Client } from "@/common/types/client"
 import { useEffect } from "react"
 
-interface MerchantFormComponentProps {
+interface ClientFormComponentProps {
   visible: boolean
-  initialValues?: Merchant
-  onSubmit: (values: Merchant) => void
+  initialValues?: Client
+  onSubmit: (values: Client) => void
   onCancel: () => void
 }
 
-const MerchantFormComponent = ({
+const ClientFormComponent = ({
   visible,
   initialValues,
   onSubmit,
   onCancel,
-}: MerchantFormComponentProps) => {
+}: ClientFormComponentProps) => {
   const [form] = Form.useForm()
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const MerchantFormComponent = ({
   return (
     <Modal
       open={visible}
-      title={initialValues ? "Edit Merchant" : "Create Merchant"}
+      title={initialValues ? "Edit Client" : "Create Client"}
       onCancel={onCancel}
       footer={[
         <Button key="cancel" onClick={onCancel}>
@@ -56,44 +56,39 @@ const MerchantFormComponent = ({
           name="name"
           rules={[{ required: true, message: "Please enter the name" }]}
         >
-          <Input placeholder="Merchant Name" />
+          <Input placeholder="Client Name" />
         </Form.Item>
         <Form.Item
-          label="Address"
-          name="address"
-          rules={[{ required: true, message: "Please enter the address" }]}
+          label="Surname"
+          name="surname"
+          rules={[{ required: true, message: "Please enter the surname" }]}
         >
-          <Input placeholder="Address" />
+          <Input placeholder="Client Surname" />
         </Form.Item>
         <Form.Item
-          label="Client ID"
-          name="clientId"
-          rules={[{ required: true, message: "Please enter the Client ID" }]}
+          label="CIF/NIF/NIE"
+          name="cifNifNie"
+          rules={[{ required: true, message: "Please enter the CIF/NIF/NIE" }]}
         >
-          <Input placeholder="Client Identifier" />
+          <Input placeholder="Client CIF/NIF/NIE" />
         </Form.Item>
         <Form.Item
-          label="Merchant Type"
-          name="merchantType"
-          rules={[
-            {
-              required: true,
-              message: "Please select the merchant type",
-            },
-          ]}
+          label="Phone"
+          name="phone"
+          rules={[{ required: true, message: "Please enter the phone" }]}
         >
-          <Select placeholder="Select a type">
-            <Select.Option value="MERCHANT_TYPE_PERSONAL_SERVICES">
-              Personal Services
-            </Select.Option>
-            <Select.Option value="MERCHANT_TYPE_FINANCIAL_SERVICES">
-              Financial Services
-            </Select.Option>
-          </Select>
+          <Input placeholder="Client Phone" />
+        </Form.Item>
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[{ required: true, message: "Please enter the email" }]}
+        >
+          <Input placeholder="Client Email" />
         </Form.Item>
       </Form>
     </Modal>
   )
 }
 
-export default MerchantFormComponent
+export default ClientFormComponent
