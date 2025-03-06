@@ -1,18 +1,23 @@
 "use client"
 
-import { Table, Button } from "antd"
-import { EditOutlined, PlusOutlined } from "@ant-design/icons"
-import useCases from "@/service/src/application"
+import { CSSProperties, useEffect, useState } from "react"
+
+import { useRouter, useSearchParams } from "next/navigation"
+
 import { Merchant } from "@/common/types/merchant"
-import { CSSProperties, useEffect, useState, useCallback } from "react"
 import { MerchantFormComponent } from "@/common/components/MerchantComponent/Delivery"
 import { SearchMerchantComponent } from "@/common/components/MerchantComponent/Delivery"
-import { useRouter, useSearchParams } from "next/navigation"
+import useCases from "@/service/src/application"
+
+import { EditOutlined, PlusOutlined } from "@ant-design/icons"
+import { Table, Button } from "antd"
+
 import { useDebouncedCallback } from "use-debounce"
 
 const WAIT_BETWEEN_CHANGE = 300
 
 const MerchantsPage = () => {
+  //State management
   const router = useRouter()
   const searchParams = useSearchParams()
   const [merchants, setMerchants] = useState<Merchant[]>([])
@@ -23,15 +28,113 @@ const MerchantsPage = () => {
     Merchant | undefined
   >(undefined)
 
-  const fetchAllMerchants = useCallback(async () => {
+  //Update URL params
+  const updateUrlParams = (params: URLSearchParams) => {
+    router.replace(`/dashboard/merchants?${params.toString()}`)
+  }
+
+  //Loading state management
+  const withLoadingState = async <T,>(
+    operation: () => Promise<T>
+  ): Promise<T> => {
+    setIsLoading(true)
+    try {
+      return await operation()
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  //Fetch and update merchants management
+  const fetchAndUpdateMerchants = async () => {
     try {
       const data = await useCases.getMerchants()
       setMerchants(data)
     } catch (error) {
       console.error("Error fetching merchants:", error)
+      setMerchants([])
     }
-  }, [])
+  }
 
+  //Merchant operation management (create, update)
+  const handleMerchantOperation = async (operation: () => Promise<void>) => {
+    await withLoadingState(async () => {
+      await operation()
+      await fetchAndUpdateMerchants()
+      setIsModalVisible(false)
+      setSelectedMerchant(undefined)
+    })
+  }
+
+  //Search management
+  const handleSearch = useDebouncedCallback(
+    async (type: "id" | "name", value: string, pageParam?: string) => {
+      if (!value.trim()) {
+        await withLoadingState(async () => {
+          await fetchAndUpdateMerchants()
+          const params = new URLSearchParams()
+          if (searchParams.get("page")) {
+            params.set("page", searchParams.get("page")!)
+          }
+          updateUrlParams(params)
+        })
+        return
+      }
+
+      //Search by id or name
+      await withLoadingState(async () => {
+        const params = new URLSearchParams()
+        params.set("type", type)
+        params.set("value", value)
+        params.set("page", pageParam || "1")
+        updateUrlParams(params)
+
+        try {
+          const result =
+            type === "id"
+              ? await useCases.findById(null, value)
+              : await useCases.findByName(null, value)
+
+          setMerchants(
+            type === "id"
+              ? result
+                ? [result]
+                : []
+              : Array.isArray(result) && result.length > 0
+              ? result
+              : []
+          )
+        } catch (error) {
+          console.error("Error during search:", error)
+          setMerchants([])
+        }
+      })
+    },
+    WAIT_BETWEEN_CHANGE,
+    { maxWait: WAIT_BETWEEN_CHANGE * 2 }
+  )
+
+  //Create merchant management
+  const handleCreate = (values: Merchant) => {
+    handleMerchantOperation(async () => {
+      await useCases.createMerchant(null, values)
+    })
+  }
+
+  //Update merchant management
+  const handleUpdate = (values: Merchant) => {
+    if (!selectedMerchant?.id) return
+    handleMerchantOperation(async () => {
+      await useCases.updateMerchant(
+        null,
+        values,
+        undefined,
+        selectedMerchant.id
+      )
+    })
+  }
+
+  //Initial load management
   useEffect(() => {
     const type = (searchParams.get("type") as "id" | "name") || "name"
     const value = searchParams.get("value") || ""
@@ -40,95 +143,22 @@ const MerchantsPage = () => {
 
     if (value) {
       handleSearch(type, value, page.toString())
-    } else if (!value) {
-      fetchAllMerchants()
+    } else {
+      fetchAndUpdateMerchants()
     }
-  }, [fetchAllMerchants, searchParams])
+  }, [searchParams])
 
-  const handleSearch = useDebouncedCallback(
-    async (type: "id" | "name", value: string, pageParam?: string) => {
-      setIsLoading(true)
-      try {
-        if (!value.trim()) {
-          await fetchAllMerchants()
-          const params = new URLSearchParams()
-          const currentPage = searchParams.get("page")
-          if (currentPage) {
-            params.set("page", currentPage)
-          }
-          router.replace(`/dashboard/merchants?${params.toString()}`)
-        } else {
-          const params = new URLSearchParams()
-          params.set("type", type)
-          params.set("value", value)
-          params.set("page", pageParam || "1")
-          router.replace(`/dashboard/merchants?${params.toString()}`)
-
-          if (type === "id") {
-            const result = await useCases.findById(null, value)
-            setMerchants(result ? [result] : [])
-          } else {
-            const result = await useCases.findByName(null, value)
-            setMerchants(
-              Array.isArray(result) && result.length > 0 ? result : []
-            )
-          }
-        }
-      } catch (error) {
-        console.error("Error during search:", error)
-        setMerchants([])
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    WAIT_BETWEEN_CHANGE,
-    { maxWait: WAIT_BETWEEN_CHANGE * 2 }
-  )
-
-  const handleCreate = async (values: Merchant) => {
-    try {
-      setIsLoading(true)
-      await useCases.createMerchant(null, values)
-      await fetchAllMerchants()
-      setIsModalVisible(false)
-    } catch (error) {
-      console.error("Error creating merchant:", error)
-    } finally {
-      setIsLoading(false)
-    }
+  const paginationStyle: CSSProperties = {
+    display: "flex",
+    justifyContent: "center",
   }
 
-  const handleUpdate = async (values: Merchant) => {
-    if (!selectedMerchant?.id) return
-
-    try {
-      setIsLoading(true)
-      await useCases.updateMerchant(
-        null,
-        values,
-        undefined,
-        selectedMerchant.id
-      )
-      await fetchAllMerchants()
-      setIsModalVisible(false)
-      setSelectedMerchant(undefined)
-    } catch (error) {
-      console.error("Error updating merchant:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleOpenModal = (merchant?: Merchant) => {
+  const handleModalControl = (merchant?: Merchant) => {
     setSelectedMerchant(merchant)
-    setIsModalVisible(true)
+    setIsModalVisible(!isModalVisible)
   }
 
-  const handleCloseModal = () => {
-    setIsModalVisible(false)
-    setSelectedMerchant(undefined)
-  }
-
+  //Merchant table
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Name", dataIndex: "name", key: "name" },
@@ -141,16 +171,11 @@ const MerchantsPage = () => {
         <Button
           type="text"
           icon={<EditOutlined />}
-          onClick={() => handleOpenModal(record)}
+          onClick={() => handleModalControl(record)}
         />
       ),
     },
   ]
-
-  const paginationStyle: CSSProperties = {
-    display: "flex",
-    justifyContent: "center",
-  }
 
   return (
     <div className="h-full w-full p-4">
@@ -164,7 +189,7 @@ const MerchantsPage = () => {
           type="primary"
           ghost
           icon={<PlusOutlined />}
-          onClick={() => handleOpenModal()}
+          onClick={() => handleModalControl()}
         >
           Create Merchant
         </Button>
@@ -188,10 +213,13 @@ const MerchantsPage = () => {
         loading={isLoading}
       />
       <MerchantFormComponent
+        key={`${isModalVisible}-${
+          selectedMerchant ? selectedMerchant.id : "new"
+        }`}
         visible={isModalVisible}
         initialValues={selectedMerchant}
         onSubmit={selectedMerchant ? handleUpdate : handleCreate}
-        onCancel={handleCloseModal}
+        onCancel={() => handleModalControl()}
       />
     </div>
   )
