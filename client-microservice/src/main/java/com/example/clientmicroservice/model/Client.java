@@ -16,6 +16,7 @@ public class Client extends MainTable {
 
     public static final String CLIENT_PK_PREFIX = "CLIENT#";
     public static final String CLIENT_SK_PREFIX = "METADATA";
+    public static final String CLIENT_GSI1_PK_PREFIX = "EMAIL#";
 
     private String name;
     private String surname;
@@ -34,6 +35,6 @@ public class Client extends MainTable {
 
     public void setEmail(String email) {
         this.email = email;
-        setGIndex2Pk("EMAIL#" + email);
+        setGIndex2Pk(CLIENT_GSI1_PK_PREFIX + email);
     }
 }

@@ -3,19 +3,15 @@ package com.example.merchantmicroservice.service;
 import com.example.merchantmicroservice.mappers.MerchantMapper;
 import com.example.merchantmicroservice.model.Merchant;
 import com.example.merchantmicroservice.model.dto.MerchantInputDTO;
-import com.example.merchantmicroservice.model.dto.MerchantOutputDTO;
 import com.example.merchantmicroservice.repository.MerchantRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class MerchantService {
 
     private final MerchantRepository merchantRepository;

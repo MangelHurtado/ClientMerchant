@@ -15,6 +15,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 public class Merchant extends MainTable {
     public static final String MERCHANT_PK_PREFIX = "MERCHANT#";
     public static final String MERCHANT_SK_PREFIX = "METADATA";
+    public static final String MERCHANT_GSI1_PREFIX = "CLIENTID#";
 
     private String name;
     private String address;
@@ -37,6 +38,6 @@ public class Merchant extends MainTable {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
-        setGIndex2Pk(clientId);
+        setGIndex2Pk(MERCHANT_GSI1_PREFIX + clientId);
     }
 }

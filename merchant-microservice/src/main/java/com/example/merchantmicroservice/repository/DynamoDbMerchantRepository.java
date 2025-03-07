@@ -6,8 +6,12 @@ import lombok.var;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +48,7 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
                 .partitionValue(Merchant.MERCHANT_PK_PREFIX + id)
                 .sortValue(Merchant.MERCHANT_SK_PREFIX)
                 .build();
+
         return Optional.ofNullable(merchantTable.getItem(key));
     }
 
@@ -68,6 +73,7 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
      */
     @Override
     public Merchant updateMerchant(Merchant merchant) {
+        merchant.setClientId(merchant.getClientId());
         merchantTable.updateItem(merchant);
         return merchant;
     }
@@ -83,7 +89,7 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
             DynamoDbIndex<Merchant> gsi = merchantTable.index("GSI1");
 
             var results = gsi.query(r -> r.queryConditional(
-                    QueryConditional.keyEqualTo(k -> k.partitionValue(clientId))
+                    QueryConditional.keyEqualTo(k -> k.partitionValue(Merchant.MERCHANT_GSI1_PREFIX + clientId))
             ));
 
             List<Merchant> merchants = new ArrayList<>();
@@ -98,8 +104,20 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
      */
     @Override
     public List<Merchant> findAll() {
-        return merchantTable.scan().items().stream()
-                .filter(m -> m.getPartitionKey().startsWith("MERCHANT#"))
+        Expression expression = Expression.builder()
+                .expression("begins_with(PK, :skPrefix)")
+                .expressionValues(
+                        Collections.singletonMap(":skPrefix", AttributeValue.builder()
+                                .s(Merchant.MERCHANT_PK_PREFIX).build()))
+                .build();
+
+        ScanEnhancedRequest scanEnhancedRequest = ScanEnhancedRequest.builder()
+                .filterExpression(expression)
+                .build();
+
+        return merchantTable.scan(scanEnhancedRequest)
+                .stream()
+                .flatMap(page -> page.items().stream())
                 .collect(Collectors.toList());
     }
 }

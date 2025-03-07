@@ -2,18 +2,24 @@ package com.example.clientmicroservice.repository;
 
 import com.example.clientmicroservice.model.Client;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class DynamoDBClientRepository implements ClientRepository {
 
     private final DynamoDbTable<Client> clientTable;
@@ -88,6 +94,9 @@ public class DynamoDBClientRepository implements ClientRepository {
      */
     @Override
     public Client updateClient(Client client) {
+        log.info("Client updated in repository: {}", client.toString());
+        log.info("Client PK in repository: {}", client.getPartitionKey());
+        client.setEmail(client.getEmail());
         clientTable.updateItem(client);
         return client;
     }
@@ -99,8 +108,24 @@ public class DynamoDBClientRepository implements ClientRepository {
      */
     @Override
     public List<Client> findAll() {
-        return clientTable.scan().items().stream()
-                .filter(c -> c.getPartitionKey().startsWith("CLIENT#"))
+//        return clientTable.scan().items().stream()
+//                .filter(c -> c.getPartitionKey().startsWith("CLIENT#"))
+//                .collect(Collectors.toList());
+
+        Expression expression = Expression.builder()
+                .expression("begins_with(PK, :skPrefix)")
+                .expressionValues(
+                        Collections.singletonMap(":skPrefix", AttributeValue.builder()
+                                .s(Client.CLIENT_PK_PREFIX).build()))
+                .build();
+
+        ScanEnhancedRequest scanEnhancedRequest = ScanEnhancedRequest.builder()
+                .filterExpression(expression)
+                .build();
+
+        return clientTable.scan(scanEnhancedRequest)
+                .stream()
+                .flatMap(page -> page.items().stream())
                 .collect(Collectors.toList());
     }
 }
