@@ -51,7 +51,7 @@ const ClientsPage = () => {
   //Fetch and update clients management
   const fetchAndUpdateClients = async () => {
     try {
-      const data = await useCases.getClients()
+      const data = await useCases.clients.getClients()
       setClients(data)
     } catch (error) {
       console.error("Error fetching clients:", error)
@@ -117,11 +117,13 @@ const ClientsPage = () => {
         try {
           const result =
             type === "id"
-              ? await useCases.findById(null, value)
-              : await useCases.findByName(null, value)
+              ? await useCases.clients.findById(null, value)
+              : type === "email"
+              ? await useCases.clients.findByEmail(null, value)
+              : await useCases.clients.findByName(null, value)
 
           setClients(
-            type === "id"
+            type === "id" || type === "email"
               ? result
                 ? [result]
                 : []
@@ -142,7 +144,7 @@ const ClientsPage = () => {
   //Create client management
   const handleCreate = (values: Client) => {
     handleClientOperation(async () => {
-      await useCases.createClient(null, values)
+      await useCases.clients.createClient(null, values)
     }, "create")
   }
 
@@ -150,7 +152,12 @@ const ClientsPage = () => {
   const handleUpdate = (values: Client) => {
     if (!selectedClient?.id) return
     handleClientOperation(async () => {
-      await useCases.updateClient(null, values, undefined, selectedClient.id)
+      await useCases.clients.updateClient(
+        null,
+        values,
+        undefined,
+        selectedClient.id
+      )
     }, "update")
   }
 

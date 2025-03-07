@@ -28,7 +28,7 @@ const merchantsUseCases = {
   findById: (signal, id, token) => {
     return manageRequest(
       signal,
-      "findById",
+      "findMerchantById",
       {},
       "query",
       "normal",
@@ -43,7 +43,7 @@ const merchantsUseCases = {
   findByName: (signal, name, token) => {
     return manageRequest(
       signal,
-      "findByName",
+      "findMerchantByName",
       {},
       "query",
       "normal",

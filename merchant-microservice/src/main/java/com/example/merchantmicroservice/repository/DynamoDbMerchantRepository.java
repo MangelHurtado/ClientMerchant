@@ -60,8 +60,21 @@ public class DynamoDbMerchantRepository implements MerchantRepository {
      */
     @Override
     public List<Merchant> findByName(String name) {
-        return merchantTable.scan().items().stream()
-                .filter(m -> m.getPartitionKey().startsWith("MERCHANT#") && m.getName().toLowerCase().contains(name.toLowerCase()))
+        Expression expression = Expression.builder()
+                .expression("begins_with(PK, :pkPrefix)")
+                .expressionValues(
+                        Collections.singletonMap(":pkPrefix", AttributeValue.builder()
+                                .s(Merchant.MERCHANT_PK_PREFIX).build()))
+                .build();
+
+        ScanEnhancedRequest scanEnhancedRequest = ScanEnhancedRequest.builder()
+                .filterExpression(expression)
+                .build();
+
+        return merchantTable.scan(scanEnhancedRequest)
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .filter(merchant -> merchant.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
 

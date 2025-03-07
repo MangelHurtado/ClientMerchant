@@ -51,7 +51,7 @@ const MerchantsPage = () => {
   //Fetch and update merchants management
   const fetchAndUpdateMerchants = async () => {
     try {
-      const data = await useCases.getMerchants()
+      const data = await useCases.merchants.getMerchants()
       setMerchants(data)
     } catch (error) {
       console.error("Error fetching merchants:", error)
@@ -115,8 +115,8 @@ const MerchantsPage = () => {
         try {
           const result =
             type === "id"
-              ? await useCases.findById(null, value)
-              : await useCases.findByName(null, value)
+              ? await useCases.merchants.findById(null, value)
+              : await useCases.merchants.findByName(null, value)
 
           setMerchants(
             type === "id"
@@ -140,7 +140,7 @@ const MerchantsPage = () => {
   //Create merchant management
   const handleCreate = (values: Merchant) => {
     handleMerchantOperation(async () => {
-      await useCases.createMerchant(null, values)
+      await useCases.merchants.createMerchant(null, values)
     }, "create")
   }
 
@@ -148,7 +148,7 @@ const MerchantsPage = () => {
   const handleUpdate = (values: Merchant) => {
     if (!selectedMerchant?.id) return
     handleMerchantOperation(async () => {
-      await useCases.updateMerchant(
+      await useCases.merchants.updateMerchant(
         null,
         values,
         undefined,

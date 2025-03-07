@@ -81,8 +81,21 @@ public class DynamoDBClientRepository implements ClientRepository {
      */
     @Override
     public List<Client> findByName(String name) {
-        return clientTable.scan().items().stream()
-                .filter(c -> c.getPartitionKey().startsWith("CLIENT#") && c.getName().toLowerCase().contains(name.toLowerCase()))
+        Expression expression = Expression.builder()
+                .expression("begins_with(PK, :pkPrefix)")
+                .expressionValues(
+                        Collections.singletonMap(":pkPrefix", AttributeValue.builder()
+                                .s(Client.CLIENT_PK_PREFIX).build()))
+                .build();
+
+        ScanEnhancedRequest scanEnhancedRequest = ScanEnhancedRequest.builder()
+                .filterExpression(expression)
+                .build();
+
+        return clientTable.scan(scanEnhancedRequest)
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .filter(client -> client.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -108,10 +121,6 @@ public class DynamoDBClientRepository implements ClientRepository {
      */
     @Override
     public List<Client> findAll() {
-//        return clientTable.scan().items().stream()
-//                .filter(c -> c.getPartitionKey().startsWith("CLIENT#"))
-//                .collect(Collectors.toList());
-
         Expression expression = Expression.builder()
                 .expression("begins_with(PK, :skPrefix)")
                 .expressionValues(
