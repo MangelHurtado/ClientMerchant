@@ -6,8 +6,9 @@ import "./globals.css"
 import { Layout, Menu, Button, ConfigProvider, theme, Tooltip } from "antd"
 import { HomeOutlined, BulbOutlined } from "@ant-design/icons"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { ThemeContext } from "./context/ThemeContext"
+import { AuthProvider, useAuth } from "./context/AuthContext"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -22,14 +23,17 @@ const geistMono = localFont({
 
 const { Header, Sider, Content } = Layout
 
-export default function RootLayout({
+function RootLayoutContent({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const router = useRouter()
   const [darkMode, setDarkMode] = useState(false)
   const toggleDarkMode = useCallback(() => setDarkMode((prev) => !prev), [])
   const pathname = usePathname()
+  const { isAuthenticated, logout } = useAuth()
+
   const headerTitle =
     pathname === "/dashboard/merchants"
       ? "Merchants"
@@ -102,7 +106,18 @@ export default function RootLayout({
                   ></Menu>
                   <Menu
                     className="absolute bottom-0 w-full border-r-0"
-                    items={[{ label: "Signout", key: "signout", danger: true }]}
+                    onClick={({ key }) => {
+                      if (key === "signout") {
+                        logout()
+                      } else if (key === "signin") {
+                        router.push("/auth")
+                      }
+                    }}
+                    items={[
+                      isAuthenticated
+                        ? { label: "Sign out", key: "signout", danger: true }
+                        : { label: "Sign in", key: "signin" },
+                    ]}
                   ></Menu>
                 </Sider>
                 <Content className="p-0 px-6 min-h-[280px]">{children}</Content>
@@ -112,5 +127,17 @@ export default function RootLayout({
         </ThemeContext.Provider>
       </body>
     </html>
+  )
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <AuthProvider>
+      <RootLayoutContent>{children}</RootLayoutContent>
+    </AuthProvider>
   )
 }

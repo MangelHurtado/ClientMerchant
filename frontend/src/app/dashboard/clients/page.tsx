@@ -13,6 +13,7 @@ import useCases from "@/service/src/application"
 import { EditOutlined, PlusOutlined } from "@ant-design/icons"
 import { Table, Button, Alert } from "antd"
 import { useThemedNotification } from "@/app/hooks/useThemedNotification"
+import { useAuth } from "@/app/context/AuthContext"
 
 import { useDebouncedCallback } from "use-debounce"
 
@@ -32,6 +33,7 @@ const ClientsPage = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { notifySuccess, notifyError } = useThemedNotification()
+  const { token } = useAuth()
   const [clients, setClients] = useState<Client[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
@@ -61,7 +63,7 @@ const ClientsPage = () => {
   //Fetch and update clients management
   const fetchAndUpdateClients = async () => {
     try {
-      const data = await useCases.clients.getClients()
+      const data = await useCases.clients.getClients(null, token)
       setClients(data)
       setError(null)
     } catch (error) {
@@ -129,10 +131,10 @@ const ClientsPage = () => {
         try {
           const result =
             type === "id"
-              ? await useCases.clients.findById(null, value)
+              ? await useCases.clients.findById(null, value, token)
               : type === "email"
-              ? await useCases.clients.findByEmail(null, value)
-              : await useCases.clients.findByName(null, value)
+              ? await useCases.clients.findByEmail(null, value, token)
+              : await useCases.clients.findByName(null, value, token)
 
           setClients(
             type === "id" || type === "email"
@@ -157,7 +159,7 @@ const ClientsPage = () => {
   //Create client management
   const handleCreate = (values: Client) => {
     handleClientOperation(async () => {
-      await useCases.clients.createClient(null, values)
+      await useCases.clients.createClient(null, values, token)
     }, "create")
   }
 
@@ -168,7 +170,7 @@ const ClientsPage = () => {
       await useCases.clients.updateClient(
         null,
         values,
-        undefined,
+        token,
         selectedClient.id
       )
     }, "update")
