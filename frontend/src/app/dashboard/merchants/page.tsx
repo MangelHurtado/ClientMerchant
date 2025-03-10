@@ -91,7 +91,11 @@ const MerchantsPage = () => {
 
   //Search management
   const handleSearch = useDebouncedCallback(
-    async (type: "id" | "name", value: string, pageParam?: string) => {
+    async (
+      type: "id" | "name" | "clientId",
+      value: string,
+      pageParam?: string
+    ) => {
       if (!value.trim()) {
         await withLoadingState(async () => {
           await fetchAndUpdateMerchants()
@@ -113,20 +117,25 @@ const MerchantsPage = () => {
         updateUrlParams(params)
 
         try {
-          const result =
-            type === "id"
-              ? await useCases.merchants.findById(null, value)
-              : await useCases.merchants.findByName(null, value)
-
-          setMerchants(
-            type === "id"
-              ? result
-                ? [result]
-                : []
-              : Array.isArray(result) && result.length > 0
-              ? result
-              : []
-          )
+          let result
+          switch (type) {
+            case "id":
+              result = await useCases.merchants.findById(null, value)
+              setMerchants(result ? [result] : [])
+              break
+            case "clientId":
+              result = await useCases.merchants.findByClientId(null, value)
+              setMerchants(
+                Array.isArray(result) && result.length > 0 ? result : []
+              )
+              break
+            case "name":
+              result = await useCases.merchants.findByName(null, value)
+              setMerchants(
+                Array.isArray(result) && result.length > 0 ? result : []
+              )
+              break
+          }
         } catch (error) {
           console.error("Error during search:", error)
           setMerchants([])
@@ -159,7 +168,8 @@ const MerchantsPage = () => {
 
   //Initial load management
   useEffect(() => {
-    const type = (searchParams.get("type") as "id" | "name") || "name"
+    const type =
+      (searchParams.get("type") as "id" | "name" | "clientId") || "name"
     const value = searchParams.get("value") || ""
     const page = parseInt(searchParams.get("page") || "1", 10)
     setCurrentPage(page)
@@ -205,7 +215,9 @@ const MerchantsPage = () => {
       <div className="flex justify-between mb-4">
         <SearchMerchantComponent
           onSearch={handleSearch}
-          initialType={(searchParams.get("type") as "id" | "name") || "name"}
+          initialType={
+            (searchParams.get("type") as "id" | "name" | "clientId") || "name"
+          }
           initialValue={searchParams.get("value") || ""}
         />
         <Button

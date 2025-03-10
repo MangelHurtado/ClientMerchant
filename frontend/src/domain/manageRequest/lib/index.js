@@ -30,6 +30,7 @@ export const QUERIES = {
   findMerchantById: MERCHANT_QUERIES.findById,
   findMerchantByName: MERCHANT_QUERIES.findByName,
   updateMerchant: MERCHANT_QUERIES.updateMerchant,
+  findByClientId: MERCHANT_QUERIES.findByClientId,
 }
 
 export const METHODS = {
@@ -46,4 +47,5 @@ export const METHODS = {
   findMerchantById: MERCHANT_METHODS.findById,
   findMerchantByName: MERCHANT_METHODS.findByName,
   updateMerchant: MERCHANT_METHODS.updateMerchant,
+  findByClientId: MERCHANT_METHODS.findByClientId,
 }

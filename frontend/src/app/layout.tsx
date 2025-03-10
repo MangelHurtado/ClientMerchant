@@ -55,7 +55,13 @@ function RootLayoutContent({
             }}
           >
             <Layout className="min-h-screen">
-              <Header className="bg-[#001529] text-white text-center p-0 flex items-center justify-center px-4 relative">
+              <Header
+                className={`${
+                  darkMode
+                    ? "bg-[#141414] text-white"
+                    : "bg-[#001529] text-white"
+                } text-center p-0 flex items-center justify-center px-4 relative`}
+              >
                 <h1 className="text-xl font-bold">{headerTitle}</h1>
                 <div className="absolute right-4">
                   <Tooltip

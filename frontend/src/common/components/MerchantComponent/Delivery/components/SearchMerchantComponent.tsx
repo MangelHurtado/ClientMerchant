@@ -4,9 +4,9 @@ import { Select, Input } from "antd"
 import { useEffect, useState } from "react"
 
 interface SearchMerchantComponentProps {
-  onSearch: (type: "id" | "name", value: string) => void
+  onSearch: (type: "id" | "name" | "clientId", value: string) => void
   initialValue?: string
-  initialType?: "id" | "name"
+  initialType?: "id" | "name" | "clientId"
 }
 
 const SearchMerchantComponent = ({
@@ -14,7 +14,9 @@ const SearchMerchantComponent = ({
   initialValue = "",
   initialType = "name",
 }: SearchMerchantComponentProps) => {
-  const [searchType, setSearchType] = useState<"id" | "name">(initialType)
+  const [searchType, setSearchType] = useState<"id" | "name" | "clientId">(
+    initialType
+  )
   const [searchValue, setSearchValue] = useState(initialValue)
 
   useEffect(() => {
@@ -26,10 +28,11 @@ const SearchMerchantComponent = ({
       <Select
         defaultValue="name"
         style={{ width: 120 }}
-        onChange={(value: "id" | "name") => setSearchType(value)}
+        onChange={(value: "id" | "name" | "clientId") => setSearchType(value)}
         options={[
           { value: "name", label: "Name" },
           { value: "id", label: "ID" },
+          { value: "clientId", label: "Client ID" },
         ]}
       />
       <Input

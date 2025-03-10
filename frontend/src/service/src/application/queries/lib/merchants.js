@@ -70,6 +70,21 @@ const merchantsUseCases = {
       id
     )
   },
+  findByClientId: (signal, clientId, token) => {
+    return manageRequest(
+      signal,
+      "findByClientId",
+      {},
+      "query",
+      "normal",
+      "get",
+      token,
+      "no-store",
+      {},
+      true,
+      clientId
+    )
+  },
 }
 
 export default merchantsUseCases

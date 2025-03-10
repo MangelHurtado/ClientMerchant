@@ -14,4 +14,7 @@ export const MERCHANT_METHODS = {
   updateMerchant: (response) => {
     return response.data
   },
+  findByClientId: (response) => {
+    return response.data
+  },
 }

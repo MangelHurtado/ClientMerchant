@@ -7,6 +7,8 @@ export const MERCHANT_QUERIES = {
     `${process.env.NEXT_PUBLIC_MERCHANT_API_URL}/merchant/search?name=${name}`,
   updateMerchant: (id) =>
     `${process.env.NEXT_PUBLIC_MERCHANT_API_URL}/merchant/${id}`,
+  findByClientId: (clientId) =>
+    `${process.env.NEXT_PUBLIC_MERCHANT_API_URL}/merchant/client/${clientId}`,
 }
 
 export const MERCHANT_ERROR_MESSAGES = {
@@ -15,4 +17,5 @@ export const MERCHANT_ERROR_MESSAGES = {
   findById: "Error fetching merchant by ID",
   findByName: "Error fetching merchant by name",
   updateMerchant: "Error updating merchant",
+  findByClientId: "Error fetching merchants by client ID",
 }
