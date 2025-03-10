@@ -1,9 +1,10 @@
 "use client"
 
-import { Form, Input, Button, InputNumber } from "antd"
+import { Form, Input, Button, InputNumber, Layout } from "antd"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useAuth } from "../context/AuthContext"
+import { useTheme } from "../context/ThemeContext"
 
 type AuthFormData = {
   name: string
@@ -13,6 +14,7 @@ type AuthFormData = {
 const AuthPage = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const { darkMode } = useTheme()
 
   const base64UrlEncode = (buffer: ArrayBuffer | string): string => {
     let str = ""
@@ -83,52 +85,72 @@ const AuthPage = () => {
     }
   }
 
+  const { Content } = Layout
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Authentication
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Please enter your name and age to continue
-          </p>
-        </div>
-        <Form
-          name="auth_form"
-          layout="vertical"
-          onFinish={onFinish}
-          autoComplete="off"
+    <Layout className="h-full">
+      <Content
+        className={`h-full flex items-center justify-center ${
+          darkMode ? "bg-black" : "bg-gray-50"
+        }`}
+      >
+        <div
+          className={`max-w-md w-full space-y-8 p-8 ${
+            darkMode ? "bg-[#141414]" : "bg-white"
+          } rounded-lg shadow`}
         >
-          <Form.Item
-            label="Name"
-            name="name"
-            rules={[{ required: true, message: "Please input your name!" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Age"
-            name="age"
-            rules={[{ required: true, message: "Please input your age!" }]}
-          >
-            <InputNumber min={1} max={150} className="w-full" />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="w-full"
-              loading={loading}
+          <div>
+            <h2
+              className={`mt-6 text-center text-3xl font-extrabold ${
+                darkMode ? "text-white" : "text-gray-900"
+              }`}
             >
-              Sign in
-            </Button>
-          </Form.Item>
-        </Form>
-      </div>
-    </div>
+              Authentication
+            </h2>
+            <p
+              className={`mt-2 text-center text-sm ${
+                darkMode ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              Please enter your name and age to continue
+            </p>
+          </div>
+          <Form
+            name="auth_form"
+            layout="vertical"
+            onFinish={onFinish}
+            autoComplete="off"
+          >
+            <Form.Item
+              label="Name"
+              name="name"
+              rules={[{ required: true, message: "Please input your name!" }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Age"
+              name="age"
+              rules={[{ required: true, message: "Please input your age!" }]}
+            >
+              <InputNumber min={1} max={150} className="w-full" />
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full"
+                loading={loading}
+              >
+                Sign in
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+      </Content>
+    </Layout>
   )
 }
 
