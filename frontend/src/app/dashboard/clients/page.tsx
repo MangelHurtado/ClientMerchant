@@ -11,10 +11,19 @@ import {
 import useCases from "@/service/src/application"
 
 import { EditOutlined, PlusOutlined } from "@ant-design/icons"
-import { Table, Button } from "antd"
+import { Table, Button, Alert } from "antd"
 import { useThemedNotification } from "@/app/hooks/useThemedNotification"
 
 import { useDebouncedCallback } from "use-debounce"
+
+//Extract error message from error object
+const extractErrorMessage = (error: unknown): string => {
+  return (
+    (error as any)?.response?.data?.error ||
+    (error as any)?.body?.error ||
+    (error instanceof Error ? error.message : "An unexpected error occurred")
+  )
+}
 
 const WAIT_BETWEEN_CHANGE = 300
 
@@ -30,6 +39,7 @@ const ClientsPage = () => {
   const [selectedClient, setSelectedClient] = useState<Client | undefined>(
     undefined
   )
+  const [error, setError] = useState<string | null>(null)
 
   //Update URL params
   const updateUrlParams = (params: URLSearchParams) => {
@@ -53,9 +63,11 @@ const ClientsPage = () => {
     try {
       const data = await useCases.clients.getClients()
       setClients(data)
+      setError(null)
     } catch (error) {
       console.error("Error fetching clients:", error)
       setClients([])
+      setError(extractErrorMessage(error))
     }
   }
 
@@ -134,6 +146,7 @@ const ClientsPage = () => {
         } catch (error) {
           console.error("Error during search:", error)
           setClients([])
+          setError(extractErrorMessage(error))
         }
       })
     },
@@ -225,6 +238,9 @@ const ClientsPage = () => {
           Create Client
         </Button>
       </div>
+      {error && (
+        <Alert message={error} type="error" style={{ marginBottom: 16 }} />
+      )}
       <Table
         className="w-full"
         dataSource={clients}

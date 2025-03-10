@@ -48,6 +48,11 @@ public class JwtInterceptor implements HandlerInterceptor {
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
                 return false;
             }
+        } else {
+
+            // Send a 401 Unauthorized response if the Authorization header is missing or has an invalid format
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization");
+            return false;
         }
         return true;
     }
