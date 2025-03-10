@@ -21,6 +21,10 @@ public class JwtInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("Intercepting request to check if user is over 18 years old");
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // Check if the Authorization header is present and has a Bearer token
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith("Bearer ")) {
