@@ -48,22 +48,14 @@ const manageRequest = async (
     let url = QUERIES[requestString](queryParams)
     if (mode === "query") {
       if (typeof params === "string") {
-        if (url.includes("?")) {
-          url += `&${params}`
-        } else {
-          url += `?${params}`
-        }
+        url += `?${params}`
       } else {
         const dataForSend = Object.keys(params)
           .map(
             (k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k])
           )
           .join("&")
-        if (url.includes("?")) {
-          url += `&${dataForSend}`
-        } else {
-          url += `?${dataForSend}`
-        }
+        url += `?${dataForSend}`
       }
     } else if (mode === "url") {
       url += Object.values(params).map((v) => "/" + encodeURIComponent(v))

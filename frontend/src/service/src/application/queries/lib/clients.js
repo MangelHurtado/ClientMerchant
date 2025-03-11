@@ -7,10 +7,10 @@ const clientsUseCases = {
       "createClient",
       client,
       "command",
-      "normal",
+      undefined,
       "post",
       token,
-      "no-store",
+      undefined,
       { "Content-Type": "application/json" }
     )
   },
@@ -20,8 +20,8 @@ const clientsUseCases = {
       "getClients",
       {},
       "query",
-      "normal",
-      "get",
+      undefined,
+      undefined,
       token
     )
   },
@@ -29,45 +29,33 @@ const clientsUseCases = {
     return manageRequest(
       signal,
       "findClientById",
-      {},
-      "query",
-      "normal",
-      "get",
-      token,
-      "no-store",
-      {},
-      true,
-      id
+      { id },
+      "url",
+      undefined,
+      undefined,
+      token
     )
   },
   findByName: (signal, name, token) => {
     return manageRequest(
       signal,
       "findClientByName",
-      {},
+      { name },
       "query",
-      "normal",
-      "get",
-      token,
-      "no-store",
-      {},
-      true,
-      String(name)
+      undefined,
+      undefined,
+      token
     )
   },
   findByEmail: (signal, email, token) => {
     return manageRequest(
       signal,
       "findClientByEmail",
-      {},
+      { email },
       "query",
-      "normal",
-      "get",
-      token,
-      "no-store",
-      {},
-      true,
-      String(email)
+      undefined,
+      undefined,
+      token
     )
   },
   updateClient: (signal, client, token, id) => {
@@ -76,12 +64,12 @@ const clientsUseCases = {
       "updateClient",
       client,
       "command",
-      "normal",
+      undefined,
       "put",
       token,
-      "no-store",
+      undefined,
       { "Content-Type": "application/json" },
-      true,
+      undefined,
       id
     )
   },

@@ -6,11 +6,11 @@ const merchantsUseCases = {
       signal,
       "createMerchant",
       merchant,
-      "command",
-      "normal",
+      undefined,
+      undefined,
       "post",
       token,
-      "no-store",
+      undefined,
       { "Content-Type": "application/json" }
     )
   },
@@ -20,8 +20,8 @@ const merchantsUseCases = {
       "getMerchants",
       {},
       "query",
-      "normal",
-      "get",
+      undefined,
+      undefined,
       token
     )
   },
@@ -29,30 +29,22 @@ const merchantsUseCases = {
     return manageRequest(
       signal,
       "findMerchantById",
-      {},
-      "query",
-      "normal",
-      "get",
-      token,
-      "no-store",
-      {},
-      true,
-      id
+      { id },
+      "url",
+      undefined,
+      undefined,
+      token
     )
   },
   findByName: (signal, name, token) => {
     return manageRequest(
       signal,
       "findMerchantByName",
-      {},
+      { name },
       "query",
-      "normal",
-      "get",
-      token,
-      "no-store",
-      {},
-      true,
-      String(name)
+      undefined,
+      undefined,
+      token
     )
   },
   updateMerchant: (signal, merchant, token, id) => {
@@ -60,13 +52,13 @@ const merchantsUseCases = {
       signal,
       "updateMerchant",
       merchant,
-      "command",
-      "normal",
+      undefined,
+      undefined,
       "put",
       token,
-      "no-store",
+      undefined,
       { "Content-Type": "application/json" },
-      true,
+      undefined,
       id
     )
   },
@@ -74,15 +66,11 @@ const merchantsUseCases = {
     return manageRequest(
       signal,
       "findByClientId",
-      {},
-      "query",
-      "normal",
-      "get",
-      token,
-      "no-store",
-      {},
-      true,
-      clientId
+      { clientId },
+      "url",
+      undefined,
+      undefined,
+      token
     )
   },
 }

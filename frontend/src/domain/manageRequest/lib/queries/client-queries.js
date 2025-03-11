@@ -1,11 +1,11 @@
 export const CLIENT_QUERIES = {
   createClient: () => `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client`,
   getClients: () => `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client`,
-  findById: (id) => `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client/${id}`,
-  findByName: (name) =>
-    `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client/search/by-name?name=${name}`,
-  findByEmail: (email) =>
-    `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client/search/by-email?email=${email}`,
+  findById: () => `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client`,
+  findByName: () =>
+    `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client/search/by-name`,
+  findByEmail: () =>
+    `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client/search/by-email`,
   updateClient: (id) =>
     `${process.env.NEXT_PUBLIC_CLIENT_API_URL}/client/${id}`,
 }
