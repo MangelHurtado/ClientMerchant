@@ -69,7 +69,11 @@ const ClientsPage = () => {
     } catch (error) {
       console.error("Error fetching clients:", error)
       setClients([])
-      setError(extractErrorMessage(error))
+      if ((error as any)?.body?.message === "No clients found") {
+        setError(null)
+      } else {
+        setError(extractErrorMessage(error))
+      }
     }
   }
 

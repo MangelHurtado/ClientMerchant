@@ -120,9 +120,9 @@ function RootLayoutContent({
                       }
                     }}
                     items={[
-                      isAuthenticated
-                        ? { label: "Sign out", key: "signout", danger: true }
-                        : { label: "Sign in", key: "signin" },
+                      !isAuthenticated
+                        ? { label: "Sign in", key: "signin" }
+                        : { label: "Sign out", key: "signout", danger: true },
                     ]}
                   ></Menu>
                 </Sider>
