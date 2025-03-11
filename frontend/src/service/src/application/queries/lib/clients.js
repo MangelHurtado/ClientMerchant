@@ -25,7 +25,7 @@ const clientsUseCases = {
       token
     )
   },
-  findById: (signal, id, token) => {
+  findClientById: (signal, id, token) => {
     return manageRequest(
       signal,
       "findClientById",
@@ -36,7 +36,7 @@ const clientsUseCases = {
       token
     )
   },
-  findByName: (signal, name, token) => {
+  findClientByName: (signal, name, token) => {
     return manageRequest(
       signal,
       "findClientByName",
@@ -47,7 +47,7 @@ const clientsUseCases = {
       token
     )
   },
-  findByEmail: (signal, email, token) => {
+  findClientByEmail: (signal, email, token) => {
     return manageRequest(
       signal,
       "findClientByEmail",

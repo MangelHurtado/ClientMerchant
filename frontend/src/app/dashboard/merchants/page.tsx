@@ -123,17 +123,20 @@ const MerchantsPage = () => {
           let result
           switch (type) {
             case "id":
-              result = await useCases.merchants.findById(null, value)
+              result = await useCases.merchants.findMerchantById(null, value)
               setMerchants(result ? [result] : [])
               break
             case "clientId":
-              result = await useCases.merchants.findByClientId(null, value)
+              result = await useCases.merchants.findMerchantByClientId(
+                null,
+                value
+              )
               setMerchants(
                 Array.isArray(result) && result.length > 0 ? result : []
               )
               break
             case "name":
-              result = await useCases.merchants.findByName(null, value)
+              result = await useCases.merchants.findMerchantByName(null, value)
               setMerchants(
                 Array.isArray(result) && result.length > 0 ? result : []
               )

@@ -25,7 +25,7 @@ const merchantsUseCases = {
       token
     )
   },
-  findById: (signal, id, token) => {
+  findMerchantById: (signal, id, token) => {
     return manageRequest(
       signal,
       "findMerchantById",
@@ -36,7 +36,7 @@ const merchantsUseCases = {
       token
     )
   },
-  findByName: (signal, name, token) => {
+  findMerchantByName: (signal, name, token) => {
     return manageRequest(
       signal,
       "findMerchantByName",
@@ -62,10 +62,10 @@ const merchantsUseCases = {
       id
     )
   },
-  findByClientId: (signal, clientId, token) => {
+  findMerchantByClientId: (signal, clientId, token) => {
     return manageRequest(
       signal,
-      "findByClientId",
+      "findMerchantByClientId",
       { clientId },
       "url",
       undefined,

@@ -5,16 +5,16 @@ export const MERCHANT_METHODS = {
   getMerchants: (response) => {
     return response.data
   },
-  findById: (response) => {
+  findMerchantById: (response) => {
     return response.data
   },
-  findByName: (response) => {
+  findMerchantByName: (response) => {
     return response.data
   },
   updateMerchant: (response) => {
     return response.data
   },
-  findByClientId: (response) => {
+  findMerchantByClientId: (response) => {
     return response.data
   },
 }

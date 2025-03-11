@@ -5,13 +5,13 @@ export const CLIENT_METHODS = {
   getClients: (response) => {
     return response.data
   },
-  findById: (response) => {
+  findClientById: (response) => {
     return response.data
   },
-  findByName: (response) => {
+  findClientByName: (response) => {
     return response.data
   },
-  findByEmail: (response) => {
+  findClientByEmail: (response) => {
     return response.data
   },
   updateClient: (response) => {

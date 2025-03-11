@@ -134,10 +134,10 @@ const ClientsPage = () => {
         try {
           const result =
             type === "id"
-              ? await useCases.clients.findById(null, value, token)
+              ? await useCases.clients.findClientById(null, value, token)
               : type === "email"
-              ? await useCases.clients.findByEmail(null, value, token)
-              : await useCases.clients.findByName(null, value, token)
+              ? await useCases.clients.findClientByEmail(null, value, token)
+              : await useCases.clients.findClientByName(null, value, token)
 
           setClients(
             type === "id" || type === "email"
