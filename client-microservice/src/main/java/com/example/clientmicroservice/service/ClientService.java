@@ -70,11 +70,7 @@ public class ClientService {
      * @throws NoSuchElementException If no clients are found
      */
     public List<Client> findByName(String name) {
-        List<Client> clients = clientRepository.findByName(name);
-        if (clients.isEmpty()) {
-            throw new NoSuchElementException("No clients found with the given name");
-        }
-        return clients;
+        return clientRepository.findByName(name);
     }
 
     /**
@@ -115,10 +111,6 @@ public class ClientService {
      * @throws NoSuchElementException If no clients are found
      */
     public List<Client> findAll() {
-        List<Client> clients = clientRepository.findAll();
-        if (clients.isEmpty()) {
-            throw new NoSuchElementException("No clients found");
-        }
-        return clients;
+        return clientRepository.findAll();
     }
 }

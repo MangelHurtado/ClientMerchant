@@ -1,6 +1,7 @@
 package com.example.clientmicroservice.controller;
 
 import com.example.clientmicroservice.mappers.ClientMapper;
+import com.example.clientmicroservice.model.Client;
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
 import com.example.clientmicroservice.service.ClientService;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -40,7 +42,13 @@ public class ClientController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ClientOutputDTO> findById(@PathVariable String id,  @RequestParam(required = false) boolean simpleOutput) {
-        return ResponseEntity.ok(clientMapper.toDTO(clientService.findById(id, simpleOutput)));
+        //return ResponseEntity.ok(clientMapper.toDTO(clientService.findById(id, simpleOutput)));
+        try {
+            Client client = clientService.findById(id, simpleOutput);
+            return ResponseEntity.ok(clientMapper.toDTO(client));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -51,7 +59,13 @@ public class ClientController {
      */
     @GetMapping("/search/by-email")
     public ResponseEntity<ClientOutputDTO> findByEmail(@RequestParam String email) {
-        return ResponseEntity.ok(clientMapper.toDTO(clientService.findByEmail(email)));
+        //return ResponseEntity.ok(clientMapper.toDTO(clientService.findByEmail(email)));
+        try {
+            Client client = clientService.findByEmail(email);
+            return ResponseEntity.ok(clientMapper.toDTO(client));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**

@@ -69,11 +69,7 @@ const ClientsPage = () => {
     } catch (error) {
       console.error("Error fetching clients:", error)
       setClients([])
-      if ((error as any)?.body?.message === "No clients found") {
-        setError(null)
-      } else {
-        setError(extractErrorMessage(error))
-      }
+      setError(extractErrorMessage(error))
     }
   }
 
@@ -152,7 +148,17 @@ const ClientsPage = () => {
         } catch (error) {
           console.error("Error during search:", error)
           setClients([])
-          setError(extractErrorMessage(error))
+          const maybeStatus =
+            (error as any)?.response?.status || (error as any)?.status
+          const errorMessage = extractErrorMessage(error).toLowerCase()
+          if (
+            (type === "id" || type === "email") &&
+            (maybeStatus === 404 || errorMessage.includes("not found"))
+          ) {
+            setError(null)
+          } else {
+            setError(errorMessage)
+          }
         }
       })
     },
