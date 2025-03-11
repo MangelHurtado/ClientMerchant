@@ -59,15 +59,10 @@ public class MerchantService {
      * Find a merchant by name or part of it
      *
      * @param name Merchant name or part of it
-     * @return The list of merchants found
-     * @throws NoSuchElementException If no merchants are found
+     * @return The list of merchants found (empty if none)
      */
     public List<Merchant> findByName(String name) {
-        List<Merchant> merchants = merchantRepository.findByName(name);
-        if (merchants.isEmpty()) {
-            throw new NoSuchElementException("No merchants found with the given name");
-        }
-        return merchants;
+        return merchantRepository.findByName(name);
     }
 
     /**
@@ -104,14 +99,9 @@ public class MerchantService {
     /**
      * Find all merchants
      *
-     * @return The list of merchants found
-     * @throws NoSuchElementException If no merchants are found
+     * @return The list of merchants found (empty if none)
      */
     public List<Merchant> findAll() {
-        List<Merchant> merchants = merchantRepository.findAll();
-        if (merchants.isEmpty()) {
-            throw new NoSuchElementException("No merchants found");
-        }
-        return merchants;
+        return merchantRepository.findAll();
     }
 }

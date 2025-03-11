@@ -66,8 +66,7 @@ public class ClientService {
      * Find a client by name or part of it
      *
      * @param name Client name or part of it
-     * @return List of clients with the given name or part of it
-     * @throws NoSuchElementException If no clients are found
+     * @return List of clients with the given name or part of it (empty if none)
      */
     public List<Client> findByName(String name) {
         return clientRepository.findByName(name);
@@ -107,8 +106,7 @@ public class ClientService {
     /**
      * Find all clients
      *
-     * @return List of all clients
-     * @throws NoSuchElementException If no clients are found
+     * @return List of all clients (empty if none)
      */
     public List<Client> findAll() {
         return clientRepository.findAll();

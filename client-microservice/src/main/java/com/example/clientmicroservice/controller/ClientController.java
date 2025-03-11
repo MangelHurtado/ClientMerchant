@@ -38,11 +38,10 @@ public class ClientController {
      *
      * @param id Client id
      * @param simpleOutput If true, only the id will be returned
-     * @return Response with the client
+     * @return Response with the client or not found if the client does not exist
      */
     @GetMapping("/{id}")
     public ResponseEntity<ClientOutputDTO> findById(@PathVariable String id,  @RequestParam(required = false) boolean simpleOutput) {
-        //return ResponseEntity.ok(clientMapper.toDTO(clientService.findById(id, simpleOutput)));
         try {
             Client client = clientService.findById(id, simpleOutput);
             return ResponseEntity.ok(clientMapper.toDTO(client));
@@ -59,7 +58,6 @@ public class ClientController {
      */
     @GetMapping("/search/by-email")
     public ResponseEntity<ClientOutputDTO> findByEmail(@RequestParam String email) {
-        //return ResponseEntity.ok(clientMapper.toDTO(clientService.findByEmail(email)));
         try {
             Client client = clientService.findByEmail(email);
             return ResponseEntity.ok(clientMapper.toDTO(client));

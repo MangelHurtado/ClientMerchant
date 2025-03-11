@@ -1,6 +1,7 @@
 package com.example.merchantmicroservice.controller;
 
 import com.example.merchantmicroservice.mappers.MerchantMapper;
+import com.example.merchantmicroservice.model.Merchant;
 import com.example.merchantmicroservice.model.dto.MerchantInputDTO;
 import com.example.merchantmicroservice.model.dto.MerchantOutputDTO;
 import com.example.merchantmicroservice.service.MerchantService;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,11 +39,16 @@ public class MerchantController {
      *
      * @param id Merchant id
      * @param simpleOutput If true, only the id will be returned
-     * @return Response with the merchant
+     * @return Response with the merchant or not found if the merchant does not exist
      */
     @GetMapping("/{id}")
     public ResponseEntity<MerchantOutputDTO> findById(@PathVariable String id, @RequestParam(required = false, defaultValue = "false") boolean simpleOutput) {
-        return ResponseEntity.ok(merchantMapper.toDTO(merchantService.findById(id, simpleOutput)));
+        try{
+            Merchant merchant = merchantService.findById(id, simpleOutput);
+            return ResponseEntity.ok(merchantMapper.toDTO(merchant));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
