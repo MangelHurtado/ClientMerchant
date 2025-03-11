@@ -111,8 +111,11 @@ const MerchantsPage = () => {
       //Search by id or name
       await withLoadingState(async () => {
         const params = new URLSearchParams()
-        params.set("type", type)
-        params.set("value", value)
+        // Clear any existing search params
+        ;["id", "name", "clientId"].forEach((param) => {
+          if (params.has(param)) params.delete(param)
+        })
+        params.set(type, value)
         params.set("page", pageParam || "1")
         updateUrlParams(params)
 
@@ -168,14 +171,20 @@ const MerchantsPage = () => {
 
   //Initial load management
   useEffect(() => {
-    const type =
-      (searchParams.get("type") as "id" | "name" | "clientId") || "name"
-    const value = searchParams.get("value") || ""
     const page = parseInt(searchParams.get("page") || "1", 10)
     setCurrentPage(page)
 
-    if (value) {
-      handleSearch(type, value, page.toString())
+    // Check which search param is present
+    const searchType = ["id", "name", "clientId"].find((type) =>
+      searchParams.has(type)
+    )
+    if (searchType) {
+      const value = searchParams.get(searchType) || ""
+      handleSearch(
+        searchType as "id" | "name" | "clientId",
+        value,
+        page.toString()
+      )
     } else {
       fetchAndUpdateMerchants()
     }
@@ -216,9 +225,17 @@ const MerchantsPage = () => {
         <SearchMerchantComponent
           onSearch={handleSearch}
           initialType={
-            (searchParams.get("type") as "id" | "name" | "clientId") || "name"
+            (["id", "name", "clientId"].find((type) =>
+              searchParams.has(type)
+            ) as "id" | "name" | "clientId") || "name"
           }
-          initialValue={searchParams.get("value") || ""}
+          initialValue={
+            searchParams.get(
+              ["id", "name", "clientId"].find((type) =>
+                searchParams.has(type)
+              ) || "name"
+            ) || ""
+          }
         />
         <Button
           type="primary"

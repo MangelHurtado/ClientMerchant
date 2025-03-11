@@ -123,8 +123,11 @@ const ClientsPage = () => {
       //Search by id, name or email
       await withLoadingState(async () => {
         const params = new URLSearchParams()
-        params.set("type", type)
-        params.set("value", value)
+        // Clear any existing search params
+        ;["id", "name", "email"].forEach((param) => {
+          if (params.has(param)) params.delete(param)
+        })
+        params.set(type, value)
         params.set("page", pageParam || "1")
         updateUrlParams(params)
 
@@ -188,13 +191,20 @@ const ClientsPage = () => {
 
   //Initial load management
   useEffect(() => {
-    const type = (searchParams.get("type") as "id" | "name" | "email") || "name"
-    const value = searchParams.get("value") || ""
     const page = parseInt(searchParams.get("page") || "1", 10)
     setCurrentPage(page)
 
-    if (value) {
-      handleSearch(type, value, page.toString())
+    // Check which search param is present
+    const searchType = ["id", "name", "email"].find((type) =>
+      searchParams.has(type)
+    )
+    if (searchType) {
+      const value = searchParams.get(searchType) || ""
+      handleSearch(
+        searchType as "id" | "name" | "email",
+        value,
+        page.toString()
+      )
     } else {
       fetchAndUpdateClients()
     }
@@ -237,9 +247,17 @@ const ClientsPage = () => {
         <SearchClientComponent
           onSearch={handleSearch}
           initialType={
-            (searchParams.get("type") as "id" | "name" | "email") || "name"
+            (["id", "name", "email"].find((type) => searchParams.has(type)) as
+              | "id"
+              | "name"
+              | "email") || "name"
           }
-          initialValue={searchParams.get("value") || ""}
+          initialValue={
+            searchParams.get(
+              ["id", "name", "email"].find((type) => searchParams.has(type)) ||
+                "name"
+            ) || ""
+          }
         />
         <Button
           type="primary"
