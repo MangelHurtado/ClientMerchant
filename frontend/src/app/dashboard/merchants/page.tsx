@@ -4,10 +4,8 @@ import { CSSProperties, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { Merchant } from "@/common/types/merchant"
-import {
-  MerchantFormComponent,
-  SearchMerchantComponent,
-} from "@/common/components/MerchantComponent/Delivery"
+import { MerchantFormComponent } from "@/common/components/MerchantComponent/Delivery"
+import SearchComponent from "@/common/components/SearchComponent"
 import useCases from "@/service/src/application"
 
 import { EditOutlined, PlusOutlined } from "@ant-design/icons"
@@ -225,8 +223,10 @@ const MerchantsPage = () => {
   return (
     <div className="h-full w-full p-4">
       <div className="flex justify-between mb-4">
-        <SearchMerchantComponent
-          onSearch={handleSearch}
+        <SearchComponent
+          onSearch={(type: string, value: string) => {
+            handleSearch(type as "id" | "name" | "clientId", value)
+          }}
           initialType={
             (["id", "name", "clientId"].find((type) =>
               searchParams.has(type)
@@ -239,6 +239,11 @@ const MerchantsPage = () => {
               ) || "name"
             ) || ""
           }
+          options={[
+            { value: "name", label: "Name" },
+            { value: "id", label: "ID" },
+            { value: "clientId", label: "Client ID" },
+          ]}
         />
         <Button
           type="primary"

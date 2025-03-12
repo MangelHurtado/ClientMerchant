@@ -4,17 +4,14 @@ import { CSSProperties, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { Client } from "@/common/types/client"
-import {
-  ClientFormComponent,
-  SearchClientComponent,
-} from "@/common/components/ClientComponent/Delivery"
-import useCases from "@/service/src/application"
+import { ClientFormComponent } from "@/common/components/ClientComponent/Delivery"
+import SearchComponent from "@/common/components/SearchComponent"
 
 import { EditOutlined, PlusOutlined } from "@ant-design/icons"
 import { Table, Button, Alert } from "antd"
 import { useThemedNotification } from "@/app/hooks/useThemedNotification"
 import { useAuth } from "@/app/context/AuthContext"
-
+import useCases from "@/service/src/application"
 import { useDebouncedCallback } from "use-debounce"
 
 //Extract error message from error object
@@ -244,8 +241,10 @@ const ClientsPage = () => {
   return (
     <div className="h-full w-full p-4">
       <div className="flex justify-between mb-4">
-        <SearchClientComponent
-          onSearch={handleSearch}
+        <SearchComponent
+          onSearch={(type: string, value: string) => {
+            handleSearch(type as "id" | "name" | "email", value)
+          }}
           initialType={
             (["id", "name", "email"].find((type) => searchParams.has(type)) as
               | "id"
@@ -258,6 +257,11 @@ const ClientsPage = () => {
                 "name"
             ) || ""
           }
+          options={[
+            { value: "name", label: "Name" },
+            { value: "id", label: "ID" },
+            { value: "email", label: "Email" },
+          ]}
         />
         <Button
           type="primary"
