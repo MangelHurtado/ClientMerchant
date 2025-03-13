@@ -14,7 +14,7 @@ import {
 
 import { EditOutlined, PlusOutlined } from "@ant-design/icons"
 import { Table, Button } from "antd"
-import { useThemedNotification } from "@/app/hooks/useThemedNotification"
+import { useThemedNotification } from "@/common/hooks/useThemedNotification"
 
 import { useDebouncedCallback } from "use-debounce"
 
@@ -27,7 +27,9 @@ interface MerchantDeliveryProps {
   }
 }
 
-const MerchantDelivery = ({ searchParams }: MerchantDeliveryProps) => {
+export default function MerchantDelivery({
+  searchParams,
+}: MerchantDeliveryProps) {
   const router = useRouter()
   const { notifySuccess, notifyError } = useThemedNotification()
 
@@ -225,5 +227,3 @@ const MerchantDelivery = ({ searchParams }: MerchantDeliveryProps) => {
     </div>
   )
 }
-
-export default MerchantDelivery

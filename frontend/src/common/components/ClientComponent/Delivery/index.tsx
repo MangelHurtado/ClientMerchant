@@ -1,1 +1,237 @@
-export { default as ClientFormComponent } from "./components/ClientFormComponent"
+"use client"
+
+import { CSSProperties, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/common/context/AuthContext"
+
+import { Client } from "@/common/types/client"
+import ClientFormComponent from "./components/ClientFormComponent"
+import SearchComponent from "@/common/components/SearchComponent"
+import {
+  createClientAction,
+  updateClientAction,
+  searchClients,
+} from "../Infrastructure/clientActions"
+
+import { EditOutlined, PlusOutlined } from "@ant-design/icons"
+import { Table, Button, Alert } from "antd"
+import { useThemedNotification } from "@/common/hooks/useThemedNotification"
+
+import { useDebouncedCallback } from "use-debounce"
+
+const WAIT_BETWEEN_CHANGE = 300
+
+interface ClientDeliveryProps {
+  searchParams?: {
+    query?: string
+    page?: string
+  }
+}
+
+export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
+  const router = useRouter()
+  const { token } = useAuth()
+  const { notifySuccess, notifyError } = useThemedNotification()
+
+  // Extract searchParams values
+  const pageParam = searchParams?.page
+  const queryStr = searchParams?.query || ""
+
+  const [clients, setClients] = useState<Client[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(parseInt(pageParam || "1", 10))
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedClient, setSelectedClient] = useState<Client | undefined>(
+    undefined
+  )
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const loadClients = async () => {
+      setIsLoading(true)
+      try {
+        const data = await searchClients(searchParams || {}, token)
+        setClients(data)
+        setError(null)
+      } catch (error) {
+        console.error("Error loading clients:", error)
+        setError(
+          error instanceof Error ? error.message : "Failed to load clients"
+        )
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadClients()
+  }, [searchParams])
+
+  //Update URL params
+  const updateUrlParams = (params: URLSearchParams) => {
+    router.replace(`/dashboard/clients?${params.toString()}`)
+  }
+
+  //Loading state management
+  const withLoadingState = async <T,>(
+    operation: () => Promise<T>
+  ): Promise<T> => {
+    setIsLoading(true)
+    try {
+      return await operation()
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  //Search management
+  const handleSearch = useDebouncedCallback(
+    async (type: string, value: string) => {
+      const params = new URLSearchParams()
+
+      if (value.trim()) {
+        params.set(type, value)
+        params.set("page", "1")
+      } else if (pageParam) {
+        params.set("page", pageParam)
+      }
+
+      updateUrlParams(params)
+      router.refresh()
+    },
+    WAIT_BETWEEN_CHANGE,
+    { maxWait: WAIT_BETWEEN_CHANGE * 2 }
+  )
+
+  //Create client management
+  const handleCreate = async (values: Client) => {
+    await withLoadingState(async () => {
+      const result = await createClientAction(values, token)
+      if (result.success) {
+        setIsModalVisible(false)
+        setSelectedClient(undefined)
+        router.refresh()
+        notifySuccess({
+          message: "Client created",
+        })
+      } else {
+        notifyError({
+          message: "Error creating client",
+          description: result.error,
+        })
+      }
+    })
+  }
+
+  //Update client management
+  const handleUpdate = async (values: Client) => {
+    if (!selectedClient?.id) return
+
+    await withLoadingState(async () => {
+      const result = await updateClientAction(values, selectedClient.id, token)
+      if (result.success) {
+        setIsModalVisible(false)
+        setSelectedClient(undefined)
+        router.refresh()
+        notifySuccess({
+          message: "Client updated",
+        })
+      } else {
+        notifyError({
+          message: "Error updating client",
+          description: result.error,
+        })
+      }
+    })
+  }
+
+  const paginationStyle: CSSProperties = {
+    display: "flex",
+    justifyContent: "center",
+  }
+
+  const handleModalControl = (client?: Client) => {
+    setSelectedClient(client)
+    setIsModalVisible(!isModalVisible)
+  }
+
+  //Client table
+  const columns = [
+    { title: "ID", dataIndex: "id", key: "id" },
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Surname", dataIndex: "surname", key: "surname" },
+    { title: "CIF/NIF/NIE", dataIndex: "cifNifNie", key: "cifNifNie" },
+    { title: "Phone", dataIndex: "phone", key: "phone" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_: unknown, record: Client) => (
+        <Button
+          type="text"
+          icon={<EditOutlined />}
+          onClick={() => handleModalControl(record)}
+        />
+      ),
+    },
+  ]
+
+  return (
+    <div className="h-full w-full p-4">
+      <div className="flex justify-between mb-4">
+        <SearchComponent
+          onSearch={(type, value) => handleSearch(type, value)}
+          initialType="name"
+          initialValue={queryStr}
+          options={[
+            { value: "name", label: "Name" },
+            { value: "id", label: "ID" },
+            { value: "email", label: "Email" },
+          ]}
+        />
+        <Button
+          type="primary"
+          ghost
+          icon={<PlusOutlined />}
+          onClick={() => handleModalControl()}
+        >
+          Create Client
+        </Button>
+      </div>
+      {error && (
+        <Alert message={error} type="error" style={{ marginBottom: 16 }} />
+      )}
+      <Table
+        className="w-full"
+        dataSource={clients}
+        columns={columns}
+        rowKey="id"
+        pagination={{
+          position: ["bottomCenter"],
+          pageSize: 5,
+          current: currentPage,
+          style: paginationStyle,
+          onChange: (page) => {
+            setCurrentPage(page)
+            const params = new URLSearchParams()
+            if (searchParams) {
+              Object.entries(searchParams).forEach(([key, value]) => {
+                params.set(key, String(value))
+              })
+            }
+            params.set("page", page.toString())
+            router.replace(`/dashboard/clients?${params.toString()}`)
+            router.refresh()
+          },
+        }}
+        loading={isLoading}
+      />
+      <ClientFormComponent
+        key={`${isModalVisible}-${selectedClient ? selectedClient.id : "new"}`}
+        visible={isModalVisible}
+        initialValues={selectedClient}
+        onSubmit={selectedClient ? handleUpdate : handleCreate}
+        onCancel={() => handleModalControl()}
+      />
+    </div>
+  )
+}

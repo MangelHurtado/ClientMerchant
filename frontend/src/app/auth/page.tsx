@@ -3,8 +3,8 @@
 import { Form, Input, Button, InputNumber, Layout } from "antd"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useAuth } from "../context/AuthContext"
-import { useTheme } from "../context/ThemeContext"
+import { useAuth } from "../../common/context/AuthContext"
+import { useTheme } from "../../common/context/ThemeContext"
 
 type AuthFormData = {
   name: string

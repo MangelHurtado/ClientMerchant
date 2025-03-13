@@ -7,8 +7,8 @@ import { Layout, Menu, Button, ConfigProvider, theme, Tooltip } from "antd"
 import { HomeOutlined, BulbOutlined } from "@ant-design/icons"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { ThemeContext } from "./context/ThemeContext"
-import { AuthProvider, useAuth } from "./context/AuthContext"
+import { ThemeContext } from "../common/context/ThemeContext"
+import { AuthProvider, useAuth } from "../common/context/AuthContext"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

@@ -2,7 +2,7 @@
 
 import { notification } from "antd"
 import type { NotificationArgsProps } from "antd"
-import { useTheme } from "@/app/context/ThemeContext"
+import { useTheme } from "@/common/context/ThemeContext"
 
 type NotificationConfig = Omit<NotificationArgsProps, "className"> & {
   message: string
