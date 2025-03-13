@@ -12,8 +12,9 @@ import {
   searchMerchants,
 } from "../Infrastructure/merchantActions"
 
-import { EditOutlined, PlusOutlined } from "@ant-design/icons"
-import { Table, Button } from "antd"
+import { PlusOutlined } from "@ant-design/icons"
+import { Button } from "antd"
+import CommonTable from "@/common/components/Table"
 import { useThemedNotification } from "@/common/hooks/useThemedNotification"
 
 import { useDebouncedCallback } from "use-debounce"
@@ -139,34 +140,10 @@ export default function MerchantDelivery({
     })
   }
 
-  const paginationStyle: CSSProperties = {
-    display: "flex",
-    justifyContent: "center",
-  }
-
   const handleModalControl = (merchant?: Merchant) => {
     setSelectedMerchant(merchant)
     setIsModalVisible(!isModalVisible)
   }
-
-  //Merchant table
-  const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Address", dataIndex: "address", key: "address" },
-    { title: "Type", dataIndex: "merchantType", key: "merchantType" },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_: unknown, record: Merchant) => (
-        <Button
-          type="text"
-          icon={<EditOutlined />}
-          onClick={() => handleModalControl(record)}
-        />
-      ),
-    },
-  ]
 
   return (
     <div className="h-full w-full p-4">
@@ -190,30 +167,24 @@ export default function MerchantDelivery({
           Create Merchant
         </Button>
       </div>
-      <Table
-        className="w-full"
+      <CommonTable<Merchant>
+        entityType="merchant"
         dataSource={merchants}
-        columns={columns}
-        rowKey="id"
-        pagination={{
-          position: ["bottomCenter"],
-          pageSize: 5,
-          current: currentPage,
-          style: paginationStyle,
-          onChange: (page) => {
-            setCurrentPage(page)
-            const params = new URLSearchParams()
-            if (searchParams) {
-              Object.entries(searchParams).forEach(([key, value]) => {
-                params.set(key, String(value))
-              })
-            }
-            params.set("page", page.toString())
-            router.replace(`/dashboard/merchants?${params.toString()}`)
-            router.refresh()
-          },
+        currentPage={currentPage}
+        onPageChange={(page) => {
+          setCurrentPage(page)
+          const params = new URLSearchParams()
+          if (searchParams) {
+            Object.entries(searchParams).forEach(([key, value]) => {
+              params.set(key, String(value))
+            })
+          }
+          params.set("page", page.toString())
+          router.replace(`/dashboard/merchants?${params.toString()}`)
+          router.refresh()
         }}
         loading={isLoading}
+        onEdit={handleModalControl}
       />
       <MerchantFormComponent
         key={`${isModalVisible}-${
