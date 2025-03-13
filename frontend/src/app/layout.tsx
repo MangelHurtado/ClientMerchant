@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { Toaster } from "sonner"
 import localFont from "next/font/local"
 import "./globals.css"
 import { Layout, Menu, Button, ConfigProvider, theme, Tooltip } from "antd"
@@ -130,6 +131,7 @@ function RootLayoutContent({
               </Layout>
             </Layout>
           </ConfigProvider>
+          <Toaster richColors position="top-center" />
         </ThemeContext.Provider>
       </body>
     </html>

@@ -152,7 +152,7 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
 
   return (
     <div className="h-full w-full p-4">
-      <div className="flex justify-between mb-4">
+      <div className="flex w-full items-center mb-4">
         <SearchComponent
           onSearch={(type, value) => handleSearch(type, value)}
           initialType="name"
@@ -163,14 +163,16 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
             { value: "email", label: "Email" },
           ]}
         />
-        <Button
-          type="primary"
-          ghost
-          icon={<PlusOutlined />}
-          onClick={() => handleModalControl()}
-        >
-          Create Client
-        </Button>
+        <div className="ml-auto">
+          <Button
+            type="primary"
+            ghost
+            icon={<PlusOutlined />}
+            onClick={() => handleModalControl()}
+          >
+            Create Client
+          </Button>
+        </div>
       </div>
       {error && (
         <Alert message={error} type="error" style={{ marginBottom: 16 }} />
