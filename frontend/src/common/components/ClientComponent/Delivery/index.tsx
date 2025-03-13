@@ -34,6 +34,19 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
   const { token } = useAuth()
   const { notifySuccess, notifyError } = useThemedNotification()
 
+  if (!token) {
+    return (
+      <div className="h-full w-full p-4 flex justify-center items-center">
+        <Alert
+          message="Acceso denegado"
+          description="No estás autenticado. Por favor, inicia sesión para continuar."
+          type="warning"
+          showIcon
+        />
+      </div>
+    )
+  }
+
   // Extract searchParams values
   const pageParam = searchParams?.page
   const queryStr = searchParams?.query || ""

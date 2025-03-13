@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Toaster } from "sonner"
 import localFont from "next/font/local"
 import "./globals.css"
@@ -33,7 +33,12 @@ function RootLayoutContent({
   const [darkMode, setDarkMode] = useState(false)
   const toggleDarkMode = useCallback(() => setDarkMode((prev) => !prev), [])
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
   const { isAuthenticated, logout } = useAuth()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const headerTitle =
     pathname === "/dashboard/merchants"
@@ -55,7 +60,7 @@ function RootLayoutContent({
                 : theme.defaultAlgorithm,
             }}
           >
-            <Layout className="min-h-screen">
+            <Layout className="h-screen">
               <Header
                 className={`${
                   darkMode
@@ -79,8 +84,8 @@ function RootLayoutContent({
                   </Tooltip>
                 </div>
               </Header>
-              <Layout>
-                <Sider className="overflow-auto relative">
+              <Layout className="h-full">
+                <Sider className="h-full relative">
                   <Menu
                     className="h-full border-r-0"
                     mode="inline"
@@ -121,13 +126,17 @@ function RootLayoutContent({
                       }
                     }}
                     items={[
-                      !isAuthenticated
-                        ? { label: "Sign in", key: "signin" }
-                        : { label: "Sign out", key: "signout", danger: true },
+                      mounted
+                        ? isAuthenticated
+                          ? { label: "Sign out", key: "signout", danger: true }
+                          : { label: "Sign in", key: "signin" }
+                        : { label: "Sign in", key: "signin" },
                     ]}
                   ></Menu>
                 </Sider>
-                <Content className="p-0 px-6 min-h-[280px]">{children}</Content>
+                <Content className="p-0 px-6 h-full overflow-y-auto">
+                  {children}
+                </Content>
               </Layout>
             </Layout>
           </ConfigProvider>
