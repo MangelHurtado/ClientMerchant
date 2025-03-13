@@ -1,7 +1,7 @@
 "use client"
 
 import { Modal, Form, Input, Select, Button } from "antd"
-import { Merchant } from "@/common/types/merchant"
+import { Merchant } from "@/common/components/MerchantComponent/Delivery/interface"
 import { useEffect } from "react"
 
 interface MerchantFormComponentProps {

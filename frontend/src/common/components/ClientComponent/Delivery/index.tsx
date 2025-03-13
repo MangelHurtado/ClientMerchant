@@ -1,10 +1,10 @@
 "use client"
 
-import { CSSProperties, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/common/context/AuthContext"
 
-import { Client } from "@/common/types/client"
+import { Client } from "@/common/components/ClientComponent/Delivery/interface"
 import ClientFormComponent from "./components/ClientFormComponent"
 import SearchComponent from "@/common/components/SearchComponent"
 import {

@@ -1,7 +1,7 @@
 "use client"
 
 import { Modal, Form, Input, Select, Button } from "antd"
-import { Client } from "@/common/types/client"
+import { Client } from "@/common/components/ClientComponent/Delivery/interface"
 import { useEffect } from "react"
 
 interface ClientFormComponentProps {

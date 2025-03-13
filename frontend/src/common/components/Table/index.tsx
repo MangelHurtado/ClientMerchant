@@ -1,8 +1,8 @@
 import { CSSProperties } from "react"
 import { Table as AntTable, Button } from "antd"
 import { EditOutlined } from "@ant-design/icons"
-import { Client } from "@/common/types/client"
-import { Merchant } from "@/common/types/merchant"
+import { Client } from "@/common/components/ClientComponent/Delivery/interface"
+import { Merchant } from "@/common/components/MerchantComponent/Delivery/interface"
 
 interface CommonTableProps<T extends Client | Merchant> {
   entityType: "client" | "merchant"

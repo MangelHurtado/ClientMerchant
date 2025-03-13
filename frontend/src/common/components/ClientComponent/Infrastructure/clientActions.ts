@@ -1,4 +1,4 @@
-import { Client } from "@/common/types/client"
+import { Client } from "@/common/components/ClientComponent/Delivery/interface"
 import useCases from "@/service/src/application"
 
 export async function searchClients(

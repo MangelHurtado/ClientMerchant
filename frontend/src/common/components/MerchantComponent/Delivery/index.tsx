@@ -1,9 +1,9 @@
 "use client"
 
-import { CSSProperties, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
-import { Merchant } from "@/common/types/merchant"
+import { Merchant } from "@/common/components/MerchantComponent/Delivery/interface"
 import MerchantFormComponent from "./components/MerchantFormComponent"
 import SearchComponent from "@/common/components/SearchComponent"
 import {

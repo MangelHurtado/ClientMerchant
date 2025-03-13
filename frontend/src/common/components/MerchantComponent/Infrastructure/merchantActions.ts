@@ -1,4 +1,4 @@
-import { Merchant } from "@/common/types/merchant"
+import { Merchant } from "@/common/components/MerchantComponent/Delivery/interface"
 import useCases from "@/service/src/application"
 
 export async function createMerchantAction(merchant: Merchant) {
