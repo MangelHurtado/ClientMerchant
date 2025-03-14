@@ -98,7 +98,7 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
       const params = new URLSearchParams()
 
       if (value.trim()) {
-        params.set(type, value)
+        params.set(type, value.trim())
         params.set("page", "1")
       } else if (pageParam) {
         params.set("page", pageParam)
