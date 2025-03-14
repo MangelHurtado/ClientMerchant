@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Form, Input, Select } from "antd"
 
 import { Merchant } from "@/common/components/MerchantComponent/Delivery/interface"
 import FormComponent from "@/common/components/FormComponent"
