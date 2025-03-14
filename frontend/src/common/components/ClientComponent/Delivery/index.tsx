@@ -30,22 +30,10 @@ interface ClientDeliveryProps {
 }
 
 export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
   const { token } = useAuth()
   const { notifySuccess, notifyError } = useThemedNotification()
-
-  if (!token) {
-    return (
-      <div className="h-full w-full p-4 flex justify-center items-center">
-        <Alert
-          message="Acceso denegado"
-          description="No estás autenticado. Por favor, inicia sesión para continuar."
-          type="warning"
-          showIcon
-        />
-      </div>
-    )
-  }
 
   // Extract searchParams values
   const pageParam = searchParams?.page
@@ -61,24 +49,30 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const loadClients = async () => {
-      setIsLoading(true)
-      try {
-        const data = await searchClients(searchParams || {}, token)
-        setClients(data)
-        setError(null)
-      } catch (error) {
-        console.error("Error loading clients:", error)
-        setError(
-          error instanceof Error ? error.message : "Failed to load clients"
-        )
-      } finally {
-        setIsLoading(false)
-      }
-    }
+    setMounted(true)
+  }, [])
 
-    loadClients()
-  }, [searchParams])
+  useEffect(() => {
+    if (mounted && token) {
+      const loadClients = async () => {
+        setIsLoading(true)
+        try {
+          const data = await searchClients(searchParams || {}, token)
+          setClients(data)
+          setError(null)
+        } catch (error) {
+          console.error("Error loading clients:", error)
+          setError(
+            error instanceof Error ? error.message : "Failed to load clients"
+          )
+        } finally {
+          setIsLoading(false)
+        }
+      }
+
+      loadClients()
+    }
+  }, [searchParams, mounted, token])
 
   //Update URL params
   const updateUrlParams = (params: URLSearchParams) => {
@@ -163,59 +157,80 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
     setIsModalVisible(!isModalVisible)
   }
 
-  return (
-    <div className="h-full w-full p-4">
-      <div className="flex w-full items-center mb-4">
-        <SearchComponent
-          onSearch={(type, value) => handleSearch(type, value)}
-          initialType="name"
-          initialValue={queryStr}
-          options={[
-            { value: "name", label: "Name" },
-            { value: "id", label: "ID" },
-            { value: "email", label: "Email" },
-          ]}
-        />
-        <div className="ml-auto">
-          <Button
-            type="primary"
-            ghost
-            icon={<PlusOutlined />}
-            onClick={() => handleModalControl()}
-          >
-            Create Client
-          </Button>
+  const renderContent = () => {
+    if (!mounted) return null
+
+    if (!token) {
+      return (
+        <div className="h-full w-full p-4 flex justify-center items-center">
+          <Alert
+            message="Access Denied"
+            description="You are not authenticated. Please log in to continue."
+            type="warning"
+            showIcon
+          />
         </div>
-      </div>
-      {error && (
-        <Alert message={error} type="error" style={{ marginBottom: 16 }} />
-      )}
-      <CommonTable<Client>
-        entityType="client"
-        dataSource={clients}
-        currentPage={currentPage}
-        onPageChange={(page) => {
-          setCurrentPage(page)
-          const params = new URLSearchParams()
-          if (searchParams) {
-            Object.entries(searchParams).forEach(([key, value]) => {
-              params.set(key, String(value))
-            })
-          }
-          params.set("page", page.toString())
-          router.replace(`/dashboard/clients?${params.toString()}`)
-          router.refresh()
-        }}
-        loading={isLoading}
-        onEdit={handleModalControl}
-      />
-      <ClientFormComponent
-        key={`${isModalVisible}-${selectedClient ? selectedClient.id : "new"}`}
-        visible={isModalVisible}
-        initialValues={selectedClient}
-        onSubmit={selectedClient ? handleUpdate : handleCreate}
-        onCancel={() => handleModalControl()}
-      />
-    </div>
-  )
+      )
+    }
+
+    return (
+      <>
+        <div className="flex w-full items-center mb-4">
+          <SearchComponent
+            onSearch={(type, value) => handleSearch(type, value)}
+            initialType="name"
+            initialValue={queryStr}
+            options={[
+              { value: "name", label: "Name" },
+              { value: "id", label: "ID" },
+              { value: "email", label: "Email" },
+            ]}
+          />
+          <div className="ml-auto">
+            <Button
+              type="primary"
+              ghost
+              icon={<PlusOutlined />}
+              onClick={() => handleModalControl()}
+            >
+              Create Client
+            </Button>
+          </div>
+        </div>
+        {error && (
+          <Alert message={error} type="error" style={{ marginBottom: 16 }} />
+        )}
+        <CommonTable<Client>
+          entityType="client"
+          dataSource={clients}
+          currentPage={currentPage}
+          onPageChange={(page) => {
+            setCurrentPage(page)
+            const params = new URLSearchParams()
+            if (searchParams) {
+              Object.entries(searchParams).forEach(([key, value]) => {
+                params.set(key, String(value))
+              })
+            }
+            params.set("page", page.toString())
+            router.replace(`/dashboard/clients?${params.toString()}`)
+            router.refresh()
+          }}
+          loading={isLoading}
+          onEdit={handleModalControl}
+        />
+        <ClientFormComponent
+          key={`${isModalVisible}-${
+            selectedClient ? selectedClient.id : "new"
+          }`}
+          visible={isModalVisible}
+          initialValues={selectedClient}
+          onSubmit={selectedClient ? handleUpdate : handleCreate}
+          onCancel={() => handleModalControl()}
+        />
+      </>
+    )
+  }
+
+  return <div className="h-full w-full p-4">{renderContent()}</div>
 }
