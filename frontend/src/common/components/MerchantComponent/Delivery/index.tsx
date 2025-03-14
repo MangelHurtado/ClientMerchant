@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { Form, Input, Select } from "antd"
 
 import { Merchant } from "@/common/components/MerchantComponent/Delivery/interface"
-import MerchantFormComponent from "./components/MerchantFormComponent"
+import FormComponent from "@/common/components/FormComponent"
 import SearchComponent from "@/common/components/SearchComponent"
 import {
   createMerchantAction,
@@ -188,14 +189,16 @@ export default function MerchantDelivery({
         loading={isLoading}
         onEdit={handleModalControl}
       />
-      <MerchantFormComponent
+      <FormComponent<Merchant>
         key={`${isModalVisible}-${
           selectedMerchant ? selectedMerchant.id : "new"
         }`}
         visible={isModalVisible}
+        title={selectedMerchant ? "Edit Merchant" : "Create Merchant"}
         initialValues={selectedMerchant}
         onSubmit={selectedMerchant ? handleUpdate : handleCreate}
         onCancel={() => handleModalControl()}
+        formType="merchant"
       />
     </div>
   )

@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/common/context/AuthContext"
+import { Form, Input } from "antd"
 
 import { Client } from "@/common/components/ClientComponent/Delivery/interface"
-import ClientFormComponent from "./components/ClientFormComponent"
+import FormComponent from "@/common/components/FormComponent"
 import SearchComponent from "@/common/components/SearchComponent"
 import {
   createClientAction,
@@ -219,14 +220,16 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
           loading={isLoading}
           onEdit={handleModalControl}
         />
-        <ClientFormComponent
+        <FormComponent<Client>
           key={`${isModalVisible}-${
             selectedClient ? selectedClient.id : "new"
           }`}
           visible={isModalVisible}
+          title={selectedClient ? "Edit Client" : "Create Client"}
           initialValues={selectedClient}
           onSubmit={selectedClient ? handleUpdate : handleCreate}
           onCancel={() => handleModalControl()}
+          formType="client"
         />
       </>
     )
