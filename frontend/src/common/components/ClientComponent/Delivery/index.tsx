@@ -16,7 +16,7 @@ import {
 
 import { PlusOutlined } from "@ant-design/icons"
 import { Button, Alert } from "antd"
-import CommonTable from "@/common/components/Table"
+import CommonTable from "@/common/components/TableComponent"
 import { useThemedNotification } from "@/common/hooks/useThemedNotification"
 
 import { useDebouncedCallback } from "use-debounce"
