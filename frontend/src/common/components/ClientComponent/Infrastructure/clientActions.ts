@@ -7,7 +7,7 @@ export async function searchClients(
 ) {
   try {
     if (searchParams.id) {
-      const client = await useCases.clients.findClientById(
+      const client = await useCases.findClientById(
         null,
         searchParams.id as string,
         token
@@ -16,7 +16,7 @@ export async function searchClients(
     }
 
     if (searchParams.name) {
-      return await useCases.clients.findClientByName(
+      return await useCases.findClientByName(
         null,
         searchParams.name as string,
         token
@@ -24,7 +24,7 @@ export async function searchClients(
     }
 
     if (searchParams.email) {
-      const client = await useCases.clients.findClientByEmail(
+      const client = await useCases.findClientByEmail(
         null,
         searchParams.email as string,
         token
@@ -32,7 +32,7 @@ export async function searchClients(
       return client ? [client] : []
     }
 
-    return await useCases.clients.getClients(null, token)
+    return await useCases.getClients(null, token)
   } catch (error) {
     console.error("Error searching clients:", error)
     return []
@@ -41,7 +41,7 @@ export async function searchClients(
 
 export async function createClientAction(client: Client, token: string | null) {
   try {
-    await useCases.clients.createClient(null, client, token)
+    await useCases.createClient(null, client, token)
     return { success: true }
   } catch (error) {
     console.error("Error creating client:", error)
@@ -58,7 +58,7 @@ export async function updateClientAction(
   token: string | null
 ) {
   try {
-    await useCases.clients.updateClient(null, client, token, id)
+    await useCases.updateClient(null, client, token, id)
     return { success: true }
   } catch (error) {
     console.error("Error updating client:", error)

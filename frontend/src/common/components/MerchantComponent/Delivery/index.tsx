@@ -88,8 +88,8 @@ export default function MerchantDelivery({
         params.delete("page")
       }
 
-      // Use router.push for navigation and server-side data fetching
-      router.push(`/dashboard/merchants?${params.toString()}`)
+      updateUrlParams(params)
+      router.refresh()
     },
     WAIT_BETWEEN_CHANGE,
     { maxWait: WAIT_BETWEEN_CHANGE * 2 }
