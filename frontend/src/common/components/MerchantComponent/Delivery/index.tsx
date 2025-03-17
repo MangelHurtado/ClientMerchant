@@ -9,11 +9,8 @@ import SearchComponent from "@/common/components/SearchComponent"
 import {
   createMerchantAction,
   updateMerchantAction,
-  searchMerchants,
 } from "../Infrastructure/merchantActions"
 
-import { PlusOutlined } from "@ant-design/icons"
-import { Button } from "antd"
 import CommonTable from "@/common/components/TableComponent"
 import { useThemedNotification } from "@/common/hooks/useThemedNotification"
 
@@ -21,22 +18,31 @@ import { useDebouncedCallback } from "use-debounce"
 
 const WAIT_BETWEEN_CHANGE = 300
 
+type SearchType = "name" | "id" | "clientId"
+
 interface MerchantDeliveryProps {
   searchParams?: {
-    query?: string
+    name?: string
+    id?: string
+    clientId?: string
     page?: string
   }
+  data: Merchant[]
 }
 
 export default function MerchantDelivery({
   searchParams,
+  data: data,
 }: MerchantDeliveryProps) {
   const router = useRouter()
   const { notifySuccess, notifyError } = useThemedNotification()
 
   // Extract searchParams values
   const pageParam = searchParams?.page
-  const queryStr = searchParams?.query || ""
+  const searchTypes: SearchType[] = ["name", "id", "clientId"]
+  const currentSearchType = (searchTypes.find((type) => searchParams?.[type]) ||
+    "name") as SearchType
+  const currentSearchValue = searchParams?.[currentSearchType] || ""
 
   const [merchants, setMerchants] = useState<Merchant[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -47,20 +53,8 @@ export default function MerchantDelivery({
   >(undefined)
 
   useEffect(() => {
-    const loadMerchants = async () => {
-      setIsLoading(true)
-      try {
-        const data = await searchMerchants(searchParams || {})
-        setMerchants(data)
-      } catch (error) {
-        console.error("Error loading merchants:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadMerchants()
-  }, [searchParams])
+    setMerchants(data)
+  }, [data])
 
   //Update URL params
   const updateUrlParams = (params: URLSearchParams) => {
@@ -81,18 +75,21 @@ export default function MerchantDelivery({
 
   //Search management
   const handleSearch = useDebouncedCallback(
-    async (type: string, value: string) => {
-      const params = new URLSearchParams()
+    (type: SearchType, value: string) => {
+      const params = new URLSearchParams(window.location.search)
+
+      // Clear previous search parameters
+      searchTypes.forEach((t) => params.delete(t))
 
       if (value.trim()) {
         params.set(type, value.trim())
         params.set("page", "1")
-      } else if (pageParam) {
-        params.set("page", pageParam)
+      } else {
+        params.delete("page")
       }
 
-      updateUrlParams(params)
-      router.refresh()
+      // Use router.push for navigation and server-side data fetching
+      router.push(`/dashboard/merchants?${params.toString()}`)
     },
     WAIT_BETWEEN_CHANGE,
     { maxWait: WAIT_BETWEEN_CHANGE * 2 }
@@ -149,44 +146,25 @@ export default function MerchantDelivery({
     <div className="h-full w-full p-4">
       <div className="flex w-full items-center mb-4">
         <SearchComponent
-          onSearch={(type, value) => handleSearch(type, value)}
-          initialType="name"
-          initialValue={queryStr}
+          onSearch={(type, value) => handleSearch(type as SearchType, value)}
+          initialType={currentSearchType}
+          initialValue={currentSearchValue}
           options={[
             { value: "name", label: "Name" },
             { value: "id", label: "ID" },
             { value: "clientId", label: "Client ID" },
           ]}
         />
-        <div className="ml-auto">
-          <Button
-            type="primary"
-            ghost
-            icon={<PlusOutlined />}
-            onClick={() => handleModalControl()}
-          >
-            Create Merchant
-          </Button>
-        </div>
       </div>
       <CommonTable<Merchant>
         entityType="merchant"
         dataSource={merchants}
         currentPage={currentPage}
-        onPageChange={(page) => {
-          setCurrentPage(page)
-          const params = new URLSearchParams()
-          if (searchParams) {
-            Object.entries(searchParams).forEach(([key, value]) => {
-              params.set(key, String(value))
-            })
-          }
-          params.set("page", page.toString())
-          router.replace(`/dashboard/merchants?${params.toString()}`)
-          router.refresh()
-        }}
         loading={isLoading}
         onEdit={handleModalControl}
+        onPageChange={(page) => {
+          setCurrentPage(page)
+        }}
       />
       <FormComponent<Merchant>
         key={`${isModalVisible}-${

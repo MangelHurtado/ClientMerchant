@@ -2,8 +2,8 @@ import clientsUseCases from "./lib/clients"
 import merchantsUseCases from "./lib/merchants"
 
 const queries = {
-  clients: clientsUseCases,
-  merchants: merchantsUseCases,
+  ...clientsUseCases,
+  ...merchantsUseCases,
 }
 
 export default queries
