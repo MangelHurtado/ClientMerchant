@@ -14,7 +14,7 @@ const clientsUseCases = {
       { "Content-Type": "application/json" }
     )
   },
-  getClients: (signal, token) => {
+  getClients: (signal, _endPointData, token) => {
     return manageRequest(
       signal,
       "getClients",

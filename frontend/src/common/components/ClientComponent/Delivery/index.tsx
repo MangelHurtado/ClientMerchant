@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/common/context/AuthContext"
 
 import { Client } from "@/common/components/ClientComponent/Delivery/interface"
 import FormComponent from "@/common/components/FormComponent"
@@ -10,7 +9,6 @@ import SearchComponent from "@/common/components/SearchComponent"
 import {
   createClientAction,
   updateClientAction,
-  searchClients,
 } from "../Infrastructure/clientActions"
 
 import { PlusOutlined } from "@ant-design/icons"
@@ -19,25 +17,41 @@ import CommonTable from "@/common/components/TableComponent"
 import { useThemedNotification } from "@/common/hooks/useThemedNotification"
 
 import { useDebouncedCallback } from "use-debounce"
+import { useAuth } from "@/common/context/AuthContext"
 
 const WAIT_BETWEEN_CHANGE = 300
 
+type SearchType = "name" | "id" | "email"
+
 interface ClientDeliveryProps {
   searchParams?: {
-    query?: string
+    name?: string
+    id?: string
+    email?: string
     page?: string
   }
+  data: Client[]
 }
 
-export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
+export default function ClientDelivery({
+  searchParams,
+  data,
+}: ClientDeliveryProps) {
   const [mounted, setMounted] = useState(false)
-  const router = useRouter()
   const { token } = useAuth()
+  const router = useRouter()
   const { notifySuccess, notifyError } = useThemedNotification()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Extract searchParams values
   const pageParam = searchParams?.page
-  const queryStr = searchParams?.query || ""
+  const searchTypes: SearchType[] = ["name", "id", "email"]
+  const currentSearchType = (searchTypes.find((type) => searchParams?.[type]) ||
+    "name") as SearchType
+  const currentSearchValue = searchParams?.[currentSearchType] || ""
 
   const [clients, setClients] = useState<Client[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -46,33 +60,10 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
   const [selectedClient, setSelectedClient] = useState<Client | undefined>(
     undefined
   )
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (mounted && token) {
-      const loadClients = async () => {
-        setIsLoading(true)
-        try {
-          const data = await searchClients(searchParams || {}, token)
-          setClients(data)
-          setError(null)
-        } catch (error) {
-          console.error("Error loading clients:", error)
-          setError(
-            error instanceof Error ? error.message : "Failed to load clients"
-          )
-        } finally {
-          setIsLoading(false)
-        }
-      }
-
-      loadClients()
-    }
-  }, [searchParams, mounted, token])
+    setClients(data)
+  }, [data])
 
   //Update URL params
   const updateUrlParams = (params: URLSearchParams) => {
@@ -93,14 +84,17 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
 
   //Search management
   const handleSearch = useDebouncedCallback(
-    async (type: string, value: string) => {
-      const params = new URLSearchParams()
+    (type: SearchType, value: string) => {
+      const params = new URLSearchParams(window.location.search)
+
+      // Clear previous search parameters
+      searchTypes.forEach((t) => params.delete(t))
 
       if (value.trim()) {
         params.set(type, value.trim())
         params.set("page", "1")
-      } else if (pageParam) {
-        params.set("page", pageParam)
+      } else {
+        params.delete("page")
       }
 
       updateUrlParams(params)
@@ -177,9 +171,9 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
       <>
         <div className="flex w-full items-center mb-4">
           <SearchComponent
-            onSearch={(type, value) => handleSearch(type, value)}
-            initialType="name"
-            initialValue={queryStr}
+            onSearch={(type, value) => handleSearch(type as SearchType, value)}
+            initialType={currentSearchType}
+            initialValue={currentSearchValue}
             options={[
               { value: "name", label: "Name" },
               { value: "id", label: "ID" },
@@ -197,27 +191,19 @@ export default function ClientDelivery({ searchParams }: ClientDeliveryProps) {
             </Button>
           </div>
         </div>
-        {error && (
-          <Alert message={error} type="error" style={{ marginBottom: 16 }} />
-        )}
         <CommonTable<Client>
           entityType="client"
           dataSource={clients}
           currentPage={currentPage}
-          onPageChange={(page) => {
-            setCurrentPage(page)
-            const params = new URLSearchParams()
-            if (searchParams) {
-              Object.entries(searchParams).forEach(([key, value]) => {
-                params.set(key, String(value))
-              })
-            }
-            params.set("page", page.toString())
-            router.replace(`/dashboard/clients?${params.toString()}`)
-            router.refresh()
-          }}
           loading={isLoading}
           onEdit={handleModalControl}
+          onPageChange={(page) => {
+            setCurrentPage(page)
+            const params = new URLSearchParams(window.location.search)
+            params.set("page", page.toString())
+            updateUrlParams(params)
+            router.refresh()
+          }}
         />
         <FormComponent<Client>
           key={`${isModalVisible}-${

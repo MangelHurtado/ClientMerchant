@@ -35,12 +35,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
 
   const login = (newToken: string) => {
+    // Store in localStorage for client-side access
     localStorage.setItem("auth_token", newToken)
+    // Store in cookie for server-side access
+    document.cookie = `auth_token=${newToken}; path=/`
     setToken(newToken)
   }
 
   const logout = () => {
+    // Remove from localStorage
     localStorage.removeItem("auth_token")
+    // Remove from cookies by setting expiration to past date
+    document.cookie =
+      "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
     setToken(null)
     router.push("/auth")
   }

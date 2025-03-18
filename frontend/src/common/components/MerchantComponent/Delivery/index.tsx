@@ -11,10 +11,12 @@ import {
   updateMerchantAction,
 } from "../Infrastructure/merchantActions"
 
+import { PlusOutlined } from "@ant-design/icons"
 import CommonTable from "@/common/components/TableComponent"
 import { useThemedNotification } from "@/common/hooks/useThemedNotification"
 
 import { useDebouncedCallback } from "use-debounce"
+import { Button } from "antd"
 
 const WAIT_BETWEEN_CHANGE = 300
 
@@ -155,6 +157,16 @@ export default function MerchantDelivery({
             { value: "clientId", label: "Client ID" },
           ]}
         />
+        <div className="ml-auto">
+          <Button
+            type="primary"
+            ghost
+            icon={<PlusOutlined />}
+            onClick={() => handleModalControl()}
+          >
+            Create Merchant
+          </Button>
+        </div>
       </div>
       <CommonTable<Merchant>
         entityType="merchant"
