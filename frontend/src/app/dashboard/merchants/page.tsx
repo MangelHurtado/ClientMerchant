@@ -1,5 +1,5 @@
-import MerchantDelivery from "@/common/components/MerchantComponent/Delivery"
 import { Merchant } from "@/common/components/MerchantComponent/Delivery/interface"
+import MerchantDelivery from "@/common/components/MerchantComponent/Delivery"
 import Service from "@/service/src"
 
 interface MerchantSearchParams {

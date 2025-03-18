@@ -1,13 +1,7 @@
 "use client"
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react"
 import { useRouter } from "next/navigation"
+import { createContext, useContext, useState, ReactNode } from "react"
 
 interface AuthContextType {
   token: string | null

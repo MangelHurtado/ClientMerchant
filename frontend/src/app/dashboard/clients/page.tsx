@@ -1,7 +1,8 @@
-import ClientDelivery from "@/common/components/ClientComponent/Delivery"
-import { Client } from "@/common/components/ClientComponent/Delivery/interface"
-import Service from "@/service/src"
 import { cookies } from "next/headers"
+
+import { Client } from "@/common/components/ClientComponent/Delivery/interface"
+import ClientDelivery from "@/common/components/ClientComponent/Delivery"
+import Service from "@/service/src"
 
 interface ClientSearchParams {
   name?: string

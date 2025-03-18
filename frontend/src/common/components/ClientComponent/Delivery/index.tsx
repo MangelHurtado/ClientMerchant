@@ -1,9 +1,13 @@
 "use client"
 
+import { useDebouncedCallback } from "use-debounce"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { Client } from "@/common/components/ClientComponent/Delivery/interface"
+import { useAuth } from "@/common/context/AuthContext"
+import { useThemedNotification } from "@/common/hooks/useThemedNotification"
+import CommonTable from "@/common/components/TableComponent"
 import FormComponent from "@/common/components/FormComponent"
 import SearchComponent from "@/common/components/SearchComponent"
 import {
@@ -11,13 +15,8 @@ import {
   updateClientAction,
 } from "../Infrastructure/clientActions"
 
-import { PlusOutlined } from "@ant-design/icons"
 import { Button, Alert } from "antd"
-import CommonTable from "@/common/components/TableComponent"
-import { useThemedNotification } from "@/common/hooks/useThemedNotification"
-
-import { useDebouncedCallback } from "use-debounce"
-import { useAuth } from "@/common/context/AuthContext"
+import { PlusOutlined } from "@ant-design/icons"
 
 const WAIT_BETWEEN_CHANGE = 300
 
