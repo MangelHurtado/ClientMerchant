@@ -78,6 +78,7 @@ const AuthPage = () => {
       const token = await generateToken(values.name, values.age)
       login(token)
       router.push("/dashboard/clients")
+      router.refresh()
     } catch (error) {
       console.error("Error during authentication:", error)
     } finally {
