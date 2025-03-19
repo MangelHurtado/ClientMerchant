@@ -23,33 +23,35 @@ export default async function ClientsPage({
   try {
     const { name, id, email, page } = searchParams
 
-    if (name) {
-      clients = (await Service.useCases("findClientByName", {
-        signal: undefined,
-        endPointData: name,
-        token,
-      })) as Client[]
-    } else if (id) {
-      const client = (await Service.useCases("findClientById", {
-        signal: undefined,
-        endPointData: id,
-        token,
-      })) as Client
-      clients = client ? [client] : []
-    } else if (email) {
-      const client = (await Service.useCases("findClientByEmail", {
-        signal: undefined,
-        endPointData: email,
-        token,
-      })) as Client
-      clients = client ? [client] : []
-    } else {
-      clients = (await Service.useCases("getClients", {
-        signal: undefined,
-        endPointData: null,
-        token,
-      })) as Client[]
-    }
+    clients = name
+      ? ((await Service.useCases("findClientByName", {
+          signal: undefined,
+          endPointData: name,
+          token,
+        })) as Client[])
+      : id
+      ? await (async () => {
+          const client = (await Service.useCases("findClientById", {
+            signal: undefined,
+            endPointData: id,
+            token,
+          })) as Client
+          return client ? [client] : []
+        })()
+      : email
+      ? await (async () => {
+          const client = (await Service.useCases("findClientByEmail", {
+            signal: undefined,
+            endPointData: email,
+            token,
+          })) as Client
+          return client ? [client] : []
+        })()
+      : ((await Service.useCases("getClients", {
+          signal: undefined,
+          endPointData: null,
+          token,
+        })) as Client[])
   } catch (error) {
     console.error("Error fetching clients:", error)
     clients = []
