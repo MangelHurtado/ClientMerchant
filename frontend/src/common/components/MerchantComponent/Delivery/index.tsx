@@ -45,17 +45,12 @@ export default function MerchantDelivery({
     "name") as SearchType
   const currentSearchValue = searchParams?.[currentSearchType] || ""
 
-  const [merchants, setMerchants] = useState<Merchant[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(parseInt(pageParam || "1", 10))
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedMerchant, setSelectedMerchant] = useState<
     Merchant | undefined
   >(undefined)
-
-  useEffect(() => {
-    setMerchants(data)
-  }, [data])
 
   //Update URL params
   const updateUrlParams = (params: URLSearchParams) => {
@@ -169,7 +164,7 @@ export default function MerchantDelivery({
       </div>
       <CommonTable<Merchant>
         entityType="merchant"
-        dataSource={merchants}
+        dataSource={data}
         currentPage={currentPage}
         loading={isLoading}
         onEdit={handleModalControl}

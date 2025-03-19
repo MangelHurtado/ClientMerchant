@@ -52,17 +52,12 @@ export default function ClientDelivery({
     "name") as SearchType
   const currentSearchValue = searchParams?.[currentSearchType] || ""
 
-  const [clients, setClients] = useState<Client[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(parseInt(pageParam || "1", 10))
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | undefined>(
     undefined
   )
-
-  useEffect(() => {
-    setClients(data)
-  }, [data])
 
   //Update URL params
   const updateUrlParams = (params: URLSearchParams) => {
@@ -192,7 +187,7 @@ export default function ClientDelivery({
         </div>
         <CommonTable<Client>
           entityType="client"
-          dataSource={clients}
+          dataSource={data}
           currentPage={currentPage}
           loading={isLoading}
           onEdit={handleModalControl}
